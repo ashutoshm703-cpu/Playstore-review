@@ -1,0 +1,1126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NPrep In-App Review System — Engineering Spec</title>
+<style>
+/* ═══════════════════════════════════════ */
+/* RESET & BASE                           */
+/* ═══════════════════════════════════════ */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;scroll-padding-top:72px}
+body{
+  font-family:system-ui,-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+  background:#F8FAFC;
+  color:#1E293B;
+  line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+}
+
+/* ═══════════════════════════════════════ */
+/* NAV                                    */
+/* ═══════════════════════════════════════ */
+nav{
+  position:sticky;top:0;z-index:100;
+  background:#fff;
+  border-bottom:1px solid #E2E8F0;
+  box-shadow:0 1px 3px rgba(0,0,0,.06);
+}
+.nav-inner{
+  max-width:1200px;margin:0 auto;
+  display:flex;align-items:center;gap:4px;
+  padding:0 24px;
+  overflow-x:auto;
+  scrollbar-width:none;
+}
+.nav-inner::-webkit-scrollbar{display:none}
+.nav-inner a{
+  display:block;white-space:nowrap;
+  padding:14px 12px;
+  font-size:13px;font-weight:500;
+  color:#64748B;text-decoration:none;
+  border-bottom:2px solid transparent;
+  transition:color .2s,border-color .2s;
+}
+.nav-inner a:hover,.nav-inner a.active{color:#2563EB;border-bottom-color:#2563EB}
+
+/* ═══════════════════════════════════════ */
+/* LAYOUT                                 */
+/* ═══════════════════════════════════════ */
+.container{max-width:1200px;margin:0 auto;padding:0 24px}
+section{padding:48px 0}
+section+section{border-top:1px solid #E2E8F0}
+
+/* ═══════════════════════════════════════ */
+/* HEADER                                 */
+/* ═══════════════════════════════════════ */
+.hero{
+  text-align:center;padding:64px 24px 48px;
+  background:linear-gradient(135deg,#EFF6FF 0%,#F8FAFC 100%);
+  border-bottom:1px solid #E2E8F0;
+}
+.hero h1{font-size:32px;font-weight:700;color:#1E293B;margin-bottom:8px}
+.hero .subtitle{font-size:16px;color:#64748B;margin-bottom:16px}
+.hero .badge{
+  display:inline-block;
+  padding:4px 14px;border-radius:999px;
+  background:#DBEAFE;color:#2563EB;
+  font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;
+}
+
+/* ═══════════════════════════════════════ */
+/* SECTION TITLES                         */
+/* ═══════════════════════════════════════ */
+.section-num{
+  display:inline-block;
+  background:#2563EB;color:#fff;
+  font-size:12px;font-weight:700;
+  padding:2px 10px;border-radius:4px;
+  margin-bottom:8px;
+}
+h2{font-size:24px;font-weight:700;color:#1E293B;margin-bottom:24px}
+h3{font-size:18px;font-weight:600;color:#1E293B;margin:32px 0 12px;padding-bottom:6px;border-bottom:2px solid #E2E8F0}
+
+/* ═══════════════════════════════════════ */
+/* CARDS                                  */
+/* ═══════════════════════════════════════ */
+.card{
+  background:#fff;border-radius:10px;
+  box-shadow:0 1px 3px rgba(0,0,0,.06),0 1px 2px rgba(0,0,0,.04);
+  padding:24px;margin-bottom:20px;
+}
+
+/* ═══════════════════════════════════════ */
+/* TABLES                                 */
+/* ═══════════════════════════════════════ */
+.table-wrap{overflow-x:auto;margin-bottom:20px;border-radius:8px;border:1px solid #E2E8F0}
+table{width:100%;border-collapse:collapse;font-size:14px}
+thead th{
+  background:#2563EB;color:#fff;
+  padding:10px 14px;text-align:left;font-weight:600;
+  white-space:nowrap;
+}
+tbody td{padding:10px 14px;border-bottom:1px solid #F1F5F9}
+tbody tr:nth-child(even){background:#F8FAFC}
+tbody tr:hover{background:#EFF6FF}
+
+/* coloured header variants */
+.table-green thead th{background:#16A34A}
+.table-amber thead th{background:#D97706}
+.table-red   thead th{background:#DC2626}
+
+/* ═══════════════════════════════════════ */
+/* NOTE BOXES                             */
+/* ═══════════════════════════════════════ */
+.note{
+  padding:14px 18px;border-radius:8px;
+  font-size:14px;margin:16px 0;
+  border-left:4px solid;
+}
+.note.blue  {background:#EFF6FF;border-color:#2563EB;color:#1E40AF}
+.note.green {background:#F0FDF4;border-color:#16A34A;color:#166534}
+.note.amber {background:#FFFBEB;border-color:#D97706;color:#92400E}
+.note.red   {background:#FEF2F2;border-color:#DC2626;color:#991B1B}
+
+/* ═══════════════════════════════════════ */
+/* FLOW DIAGRAM (CSS)                     */
+/* ═══════════════════════════════════════ */
+.flow{display:flex;flex-wrap:wrap;align-items:flex-start;gap:0;padding:24px 0;overflow-x:auto}
+.flow-row{display:flex;align-items:center;flex-wrap:wrap;gap:0;width:100%}
+.flow-box{
+  padding:10px 16px;border-radius:8px;
+  font-size:13px;font-weight:500;
+  text-align:center;white-space:nowrap;
+  flex-shrink:0;
+}
+.flow-box.action{background:#DBEAFE;color:#1E40AF;border:1px solid #93C5FD}
+.flow-box.decision{
+  background:#FEF9C3;color:#854D0E;border:1px solid #FDE047;
+  border-radius:4px;transform:rotate(0deg);
+  position:relative;
+}
+.flow-box.result{background:#F0FDF4;color:#166534;border:1px solid #86EFAC}
+.flow-box.skip{background:#FEF2F2;color:#991B1B;border:1px solid #FECACA;font-size:11px}
+.flow-arrow{
+  font-size:18px;color:#94A3B8;padding:0 6px;flex-shrink:0;
+  font-family:'SF Mono','Fira Code',monospace;
+}
+.flow-label{font-size:11px;color:#64748B;margin-left:-4px;margin-right:4px}
+.flow-section{margin-bottom:16px;width:100%}
+.flow-section-title{font-size:12px;font-weight:600;color:#64748B;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px}
+
+/* ═══════════════════════════════════════ */
+/* SAFETY LAYER CARDS                     */
+/* ═══════════════════════════════════════ */
+.safety-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;margin:16px 0}
+.safety-card{
+  background:#fff;border:1px solid #E2E8F0;border-radius:10px;
+  padding:20px;
+  border-top:3px solid #2563EB;
+}
+.safety-card h4{font-size:15px;font-weight:700;color:#2563EB;margin-bottom:8px}
+.safety-card p{font-size:14px;color:#475569}
+
+/* ═══════════════════════════════════════ */
+/* PHONE MOCKUPS                          */
+/* ═══════════════════════════════════════ */
+.mockup-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:24px;margin:20px 0}
+.phone{
+  background:#fff;border:2px solid #E2E8F0;border-radius:24px;
+  padding:20px;max-width:360px;margin:0 auto;
+  box-shadow:0 4px 12px rgba(0,0,0,.08);
+}
+.phone-header{
+  text-align:center;font-size:11px;font-weight:600;color:#94A3B8;
+  text-transform:uppercase;letter-spacing:1px;
+  padding-bottom:12px;border-bottom:1px solid #F1F5F9;margin-bottom:16px;
+}
+.phone-q{font-size:15px;font-weight:600;color:#1E293B;margin-bottom:14px;text-align:center}
+.phone-opts{display:flex;flex-direction:column;gap:8px;margin-bottom:12px}
+.phone-opt{
+  display:flex;align-items:center;gap:10px;
+  padding:10px 14px;border-radius:8px;
+  border:1px solid #E2E8F0;font-size:13px;
+  cursor:default;
+}
+.phone-opt .dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.dot-green{background:#22C55E}
+.dot-amber{background:#F59E0B}
+.dot-red{background:#EF4444}
+.phone-skip{text-align:center;font-size:12px;color:#94A3B8;margin-top:8px}
+.phone-followup{
+  margin-top:12px;padding-top:12px;border-top:1px dashed #E2E8F0;
+  font-size:12px;color:#64748B;
+}
+.phone-followup strong{display:block;margin-bottom:6px;color:#1E293B}
+.phone-followup ul{list-style:none;padding:0}
+.phone-followup li{padding:3px 0}
+.phone-followup li::before{content:"[ ] ";font-family:'SF Mono','Fira Code',monospace;color:#94A3B8}
+.phone-followup li.highlight{color:#DC2626;font-weight:600}
+.phone-followup li.highlight::before{color:#DC2626}
+
+/* ═══════════════════════════════════════ */
+/* CODE BLOCKS                            */
+/* ═══════════════════════════════════════ */
+.code-block{position:relative;margin:16px 0}
+.code-block pre{
+  background:#1E293B;color:#E2E8F0;
+  padding:20px;border-radius:8px;
+  font-family:'SF Mono','Fira Code',monospace;
+  font-size:13px;line-height:1.7;
+  overflow-x:auto;
+  white-space:pre;
+}
+.code-block .copy-btn{
+  position:absolute;top:8px;right:8px;
+  background:#334155;color:#CBD5E1;
+  border:none;border-radius:6px;
+  padding:6px 12px;font-size:12px;
+  cursor:pointer;transition:background .2s;
+  font-family:system-ui,sans-serif;
+}
+.code-block .copy-btn:hover{background:#475569;color:#fff}
+.code-label{
+  display:inline-block;
+  background:#334155;color:#94A3B8;
+  font-size:11px;font-weight:600;
+  padding:3px 10px;border-radius:6px 6px 0 0;
+  margin-bottom:-1px;position:relative;z-index:1;
+  font-family:'SF Mono','Fira Code',monospace;
+}
+
+/* ═══════════════════════════════════════ */
+/* EDGE CASES COLLAPSIBLE                 */
+/* ═══════════════════════════════════════ */
+.edge-case{
+  border:1px solid #E2E8F0;border-radius:8px;
+  margin-bottom:6px;overflow:hidden;
+}
+.edge-case summary{
+  padding:12px 16px;cursor:pointer;
+  font-size:14px;font-weight:500;
+  display:flex;align-items:center;gap:10px;
+  list-style:none;
+  transition:background .15s;
+}
+.edge-case summary::-webkit-details-marker{display:none}
+.edge-case summary:hover{background:#F8FAFC}
+.edge-case summary .ec-num{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:24px;height:24px;border-radius:6px;
+  background:#EFF6FF;color:#2563EB;
+  font-size:11px;font-weight:700;flex-shrink:0;
+}
+.edge-case summary .ec-title{flex:1}
+.edge-case summary .ec-chevron{
+  transition:transform .2s;color:#94A3B8;font-size:12px;
+}
+.edge-case[open] summary .ec-chevron{transform:rotate(90deg)}
+.edge-case .ec-body{
+  padding:0 16px 14px 50px;
+  font-size:13px;color:#475569;
+}
+.edge-case .ec-body strong{color:#1E293B}
+
+/* ═══════════════════════════════════════ */
+/* CHECKMARK TABLE                        */
+/* ═══════════════════════════════════════ */
+.check{color:#22C55E;font-weight:700}
+
+/* ═══════════════════════════════════════ */
+/* TOAST                                  */
+/* ═══════════════════════════════════════ */
+.toast{
+  position:fixed;bottom:32px;left:50%;transform:translateX(-50%) translateY(80px);
+  background:#1E293B;color:#fff;
+  padding:10px 24px;border-radius:8px;
+  font-size:14px;font-weight:500;
+  box-shadow:0 4px 12px rgba(0,0,0,.15);
+  opacity:0;transition:all .3s ease;
+  z-index:9999;pointer-events:none;
+}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* ═══════════════════════════════════════ */
+/* RESPONSIVE                             */
+/* ═══════════════════════════════════════ */
+@media(max-width:768px){
+  .hero h1{font-size:24px}
+  .safety-grid{grid-template-columns:1fr}
+  .mockup-grid{grid-template-columns:1fr}
+  table{font-size:13px}
+  thead th,tbody td{padding:8px 10px}
+  .nav-inner a{font-size:12px;padding:12px 8px}
+}
+
+/* play-store mockup */
+.ps-mockup{
+  max-width:340px;margin:20px auto;
+  background:#fff;border:2px solid #E2E8F0;border-radius:20px;
+  padding:24px;text-align:center;
+  box-shadow:0 4px 12px rgba(0,0,0,.08);
+}
+.ps-mockup h4{font-size:18px;font-weight:700;color:#1E293B;margin-bottom:6px}
+.ps-mockup p{font-size:13px;color:#64748B;margin-bottom:16px}
+.ps-mockup .ps-btn{
+  display:block;width:100%;
+  padding:12px;border-radius:8px;
+  background:#2563EB;color:#fff;
+  font-size:14px;font-weight:600;
+  border:none;cursor:default;margin-bottom:10px;
+}
+.ps-mockup .ps-link{font-size:13px;color:#94A3B8;cursor:default}
+
+/* formula block */
+.formula{
+  background:#F1F5F9;border:1px solid #E2E8F0;border-radius:8px;
+  padding:16px 20px;margin:16px 0;
+  font-family:'SF Mono','Fira Code',monospace;
+  font-size:13px;line-height:1.8;color:#334155;
+}
+</style>
+<script type="module">
+import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+mermaid.initialize({
+  startOnLoad: true,
+  theme: 'base',
+  themeVariables: {
+    primaryColor: '#dbeafe',
+    primaryTextColor: '#1e293b',
+    primaryBorderColor: '#2563eb',
+    lineColor: '#94a3b8',
+    secondaryColor: '#f1f5f9',
+    tertiaryColor: '#fff',
+    fontSize: '13px',
+    fontFamily: 'system-ui, -apple-system, sans-serif'
+  },
+  flowchart: {
+    htmlLabels: true,
+    curve: 'basis',
+    padding: 12,
+    nodeSpacing: 30,
+    rankSpacing: 40
+  }
+});
+</script>
+<style>
+.mermaid-diagram{background:#fff;border-radius:12px;padding:24px;margin:16px 0;box-shadow:0 2px 12px rgba(26,39,68,.07);overflow-x:auto}
+.mermaid-diagram .mermaid{display:flex;justify-content:center}
+.mermaid-diagram svg{max-width:100%;height:auto}
+details.whimsical-code{margin:8px 0 24px;border:1px solid #e2e8f0;border-radius:8px;overflow:hidden}
+details.whimsical-code summary{padding:10px 16px;font-size:13px;font-weight:500;color:#64748b;cursor:pointer;background:#f8fafc;user-select:none}
+details.whimsical-code summary:hover{color:#2563eb;background:#eff6ff}
+details.whimsical-code[open] summary{border-bottom:1px solid #e2e8f0}
+</style>
+</head>
+<body>
+
+<!-- ═══ NAV ═══ -->
+<nav>
+  <div class="nav-inner">
+    <a href="#overview">Overview</a>
+    <a href="#tier1-when">Tier 1: When</a>
+    <a href="#tier1-what">Tier 1: Screens</a>
+    <a href="#tier2">Tier 2: Play Store</a>
+    <a href="#triggers">Support Triggers</a>
+    <a href="#edge-cases">Edge Cases</a>
+    <a href="#mermaid">Flow Diagrams</a>
+  </div>
+</nav>
+
+<!-- ═══ HEADER ═══ -->
+<header class="hero" id="top">
+  <h1>NPrep In-App Review System &mdash; Engineering Spec</h1>
+  <p class="subtitle">Two-Tier Architecture &nbsp;|&nbsp; v2.0 &nbsp;|&nbsp; April 2026</p>
+  <span class="badge">For Engineering Discussion</span>
+</header>
+
+<main class="container">
+
+<!-- ═══════════════════════════════════════ -->
+<!-- SECTION 1: SYSTEM OVERVIEW             -->
+<!-- ═══════════════════════════════════════ -->
+<section id="overview">
+  <span class="section-num">Section 1</span>
+  <h2>System Overview</h2>
+
+  <!-- CSS Flow Diagram -->
+  <div class="card" style="overflow-x:auto">
+    <div class="flow-section">
+      <div class="flow-section-title">Tier 1 &mdash; Micro-Rating Flow</div>
+      <div class="flow-row" style="flex-wrap:wrap;gap:6px 0">
+        <span class="flow-box action">Student Completes Activity</span>
+        <span class="flow-arrow">&rarr;</span>
+        <span class="flow-box decision">Activity Completed?<br><small>(F1 criteria)</small></span>
+        <span class="flow-arrow">&rarr;</span>
+        <span class="flow-label">YES</span>
+        <span class="flow-box decision">Eligible?<br><small>(not already rated, no crash)</small></span>
+        <span class="flow-arrow">&rarr;</span>
+        <span class="flow-label">YES</span>
+        <span class="flow-box action">Increment Counter</span>
+        <span class="flow-arrow">&rarr;</span>
+        <span class="flow-box decision">Counter = N?</span>
+        <span class="flow-arrow">&rarr;</span>
+        <span class="flow-label">YES</span>
+        <span class="flow-box decision">Session Cap Clear?</span>
+        <span class="flow-arrow">&rarr;</span>
+        <span class="flow-label">YES</span>
+        <span class="flow-box result">Show Micro-Rating Popup (Tier 1)</span>
+        <span class="flow-arrow">&rarr;</span>
+        <span class="flow-box action">Response Stored</span>
+        <span class="flow-arrow">&rarr;</span>
+        <span class="flow-box result">Update Sentiment Data</span>
+      </div>
+      <div style="padding-left:40px;margin-top:4px">
+        <span class="flow-box skip">NO &rarr; skip silently (at each decision point)</span>
+      </div>
+    </div>
+
+    <div class="flow-section" style="margin-top:16px">
+      <div class="flow-section-title">Tier 2 &mdash; Play Store Ask (downstream from Tier 1)</div>
+      <div class="flow-row" style="flex-wrap:wrap;gap:6px 0;padding-left:40px;border-left:2px dashed #CBD5E1">
+        <span class="flow-box action">Play Store Eligibility Check (Tier 2)</span>
+        <span class="flow-arrow">&rarr;</span>
+        <span class="flow-box decision">All 9 Gates Pass?</span>
+        <span class="flow-arrow">&rarr;</span>
+        <span class="flow-label">YES</span>
+        <span class="flow-box decision">Happiness Moment?</span>
+        <span class="flow-arrow">&rarr;</span>
+        <span class="flow-label">YES</span>
+        <span class="flow-box result">Show "Rate us on Play Store" Prompt</span>
+        <span class="flow-arrow">&rarr;</span>
+        <span class="flow-box action">Google Play In-App Review API</span>
+      </div>
+      <div style="padding-left:80px;margin-top:4px">
+        <span class="flow-box skip">NO &rarr; skip silently</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Summary table -->
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>Tier</th><th>Purpose</th><th>What Student Sees</th><th>Goes to Play Store?</th><th>Frequency</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Tier 1: Micro-Ratings</strong></td>
+          <td>Product quality data</td>
+          <td>Contextual popup per activity type</td>
+          <td>Never</td>
+          <td>Every Nth eligible activity (progressive N)</td>
+        </tr>
+        <tr>
+          <td><strong>Tier 2: Play Store Ask</strong></td>
+          <td>Generate Play Store reviews</td>
+          <td>Simple "Enjoying NPrep?" prompt</td>
+          <td>Yes (triggers Google Play API)</td>
+          <td>When 9 gates pass + happiness moment</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════ -->
+<!-- SECTION 2: TIER 1 — WHEN              -->
+<!-- ═══════════════════════════════════════ -->
+<section id="tier1-when">
+  <span class="section-num">Section 2</span>
+  <h2>Tier 1: When to Show the Micro-Rating Popup</h2>
+
+  <!-- Activity Completion Criteria -->
+  <h3>Activity Completion Criteria</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Activity</th><th>Completed When</th><th>NOT Completed</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>Mock Test / Live Test</strong></td>
+          <td>Submitted (manual or auto on timer) + at least <strong>25% of questions attempted</strong> + student stayed for at least <strong>40% of test duration</strong></td>
+          <td>App closed without submission. Fewer than 25% questions attempted. Spent less than 40% of allotted time (e.g., submitted a 60-min test in under 24 min with few answers).</td>
+        </tr>
+        <tr>
+          <td><strong>Video Lecture</strong></td>
+          <td>80% of duration actually played (not seek position). 2x speed OK.</td>
+          <td>Scrubbed to 80% without watching. Paused before 80%.</td>
+        </tr>
+        <tr>
+          <td><strong>Question Bank</strong></td>
+          <td>20+ questions answered in single session</td>
+          <td>Fewer than 20 questions.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="note blue">Score does NOT affect completion. A student who scores 15% has their activity completed, same as 95%.</div>
+
+  <!-- Progressive N -->
+  <h3>Progressive N &mdash; The Prompting Engine</h3>
+  <p style="margin-bottom:12px">Show a micro-rating popup every Nth eligible activity, max 1 per session. N increases after each rating.</p>
+
+  <div class="formula">
+Starting N = 3
+
+After each rating or skip:
+  N = N + (rating_number + 1)
+  If negative response: N = N + 6  (permanent penalty)
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>After Rating #</th><th>N Becomes</th><th>Gap for Active Student (3/day)</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td>5</td><td>~2 days</td></tr>
+        <tr><td>2</td><td>8</td><td>~3 days</td></tr>
+        <tr><td>3</td><td>12</td><td>~4 days</td></tr>
+        <tr><td>4</td><td>17</td><td>~6 days</td></tr>
+        <tr><td>5</td><td>23</td><td>~8 days</td></tr>
+        <tr><td>6</td><td>30</td><td>~10 days</td></tr>
+        <tr><td>7</td><td>38</td><td>~13 days</td></tr>
+        <tr><td>8</td><td>47</td><td>~16 days</td></tr>
+        <tr><td>9</td><td>57</td><td>~19 days</td></tr>
+        <tr><td>10</td><td>68</td><td>~23 days</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Three Safety Layers -->
+  <h3>Three Safety Layers</h3>
+  <div class="safety-grid">
+    <div class="safety-card">
+      <h4>Progressive N</h4>
+      <p>N increases after every rating. Negative adds +6 permanently. System naturally fades over time.</p>
+    </div>
+    <div class="safety-card">
+      <h4>Monthly Cap</h4>
+      <p>Max 6 micro-rating prompts per calendar month. If cap hit, counter stays at N, deferred to next month.</p>
+    </div>
+    <div class="safety-card">
+      <h4>Lifetime Retirement</h4>
+      <p>Micro-ratings stop permanently when EITHER: (a) 15 total ratings given, OR (b) student completes a Play Store review (and already has 15+ ratings). Whichever comes first. Flat cap of 15 for all students — no branching logic.</p>
+    </div>
+  </div>
+
+  <!-- Prompt-Worthy vs Completed -->
+  <h3>Prompt-Worthy vs Completed</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Scenario</th><th>Activity Completed?</th><th>Counter Increments?</th><th>Prompt Shown?</th></tr></thead>
+      <tbody>
+        <tr><td>Test submitted, results screen visible</td><td>Yes</td><td>Yes</td><td>Yes (if counter=N and session cap clear)</td></tr>
+        <tr><td>Video reaches 100% (natural end)</td><td>Yes</td><td>Yes</td><td>Yes</td></tr>
+        <tr><td>Video 85%, student taps "Next Video"</td><td>Yes</td><td>Yes</td><td>Yes (transition screen)</td></tr>
+        <tr><td>Video 85%, student taps Back to exit</td><td>Yes</td><td>Yes</td><td>NO &mdash; moment not right. Deferred.</td></tr>
+        <tr><td>Video 85%, app backgrounded 30+ min</td><td>Yes</td><td>Yes</td><td>NO &mdash; moment passed.</td></tr>
+        <tr><td>Q-bank 20+ Qs, student taps End Session</td><td>Yes</td><td>Yes</td><td>Yes (summary screen)</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- What Changes N -->
+  <h3>What Changes N vs What Doesn't</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Event</th><th>N Changes?</th><th>Counter Resets?</th></tr></thead>
+      <tbody>
+        <tr><td>Student gives a rating (any)</td><td>YES &mdash; N increases by (rating_number + 1)</td><td>YES &mdash; resets to 0</td></tr>
+        <tr><td>Student gives negative rating</td><td>YES &mdash; additional +6 permanently</td><td>YES &mdash; resets to 0</td></tr>
+        <tr><td>Student skips the prompt</td><td>YES &mdash; N increases (skip = handled)</td><td>YES &mdash; resets to 0</td></tr>
+        <tr><td>Monthly cap blocks prompt</td><td>NO &mdash; student never saw it</td><td>NO &mdash; stays at N</td></tr>
+        <tr><td>Session cap defers prompt</td><td>NO &mdash; student never saw it</td><td>NO &mdash; stays at N</td></tr>
+        <tr><td>Student inactive 7+ days, returns</td><td>N unchanged</td><td>YES &mdash; resets to 0 (grace period)</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════ -->
+<!-- SECTION 3: TIER 1 — WHAT TO SHOW      -->
+<!-- ═══════════════════════════════════════ -->
+<section id="tier1-what">
+  <span class="section-num">Section 3</span>
+  <h2>Tier 1: What the Student Sees</h2>
+
+  <div class="mockup-grid">
+    <!-- Mock Test -->
+    <div class="phone">
+      <div class="phone-header">Mock Test Popup</div>
+      <div class="phone-q">How useful was this test for your prep?</div>
+      <div class="phone-opts">
+        <div class="phone-opt"><span class="dot dot-green"></span> Loved it &mdash; exam level</div>
+        <div class="phone-opt"><span class="dot dot-amber"></span> It was okay</div>
+        <div class="phone-opt"><span class="dot dot-red"></span> Not helpful</div>
+      </div>
+      <div class="phone-skip">Skip</div>
+      <div class="phone-followup">
+        <strong>If "Not helpful" &rarr; follow-up:</strong>
+        <ul>
+          <li>Questions too easy</li>
+          <li>Questions too hard</li>
+          <li>Not relevant to syllabus</li>
+          <li>Explanations unclear</li>
+          <li>Not enough time</li>
+          <li>App glitch / technical issue</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Video -->
+    <div class="phone">
+      <div class="phone-header">Video Lecture Popup</div>
+      <div class="phone-q">Did this lecture clear your concept?</div>
+      <div class="phone-opts">
+        <div class="phone-opt"><span class="dot dot-green"></span> Yes, got it</div>
+        <div class="phone-opt"><span class="dot dot-amber"></span> Still fuzzy</div>
+      </div>
+      <div class="phone-skip">Skip</div>
+      <div class="phone-followup">
+        <strong>If "Still fuzzy" &rarr; follow-up:</strong>
+        <ul>
+          <li>Topic too complex</li>
+          <li>Explanation unclear</li>
+          <li>Too fast</li>
+          <li>Audio/video issue</li>
+          <li>Needed more examples</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Q-Bank -->
+    <div class="phone">
+      <div class="phone-header">Question Bank Popup</div>
+      <div class="phone-q">Were these questions good practice?</div>
+      <div class="phone-opts">
+        <div class="phone-opt"><span class="dot dot-green"></span> Yes, very helpful</div>
+        <div class="phone-opt"><span class="dot dot-amber"></span> Mixed &mdash; some good, some not</div>
+        <div class="phone-opt"><span class="dot dot-red"></span> Not really</div>
+      </div>
+      <div class="phone-skip">Skip</div>
+      <div class="phone-followup">
+        <strong>If "Not really" &rarr; follow-up:</strong>
+        <ul>
+          <li>Too easy</li>
+          <li>Repetitive</li>
+          <li class="highlight">WRONG ANSWER in questions</li>
+          <li>Explanations missing</li>
+          <li>Not relevant to syllabus</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Response Classification -->
+  <h3>Response Classification</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Category</th><th>Responses</th><th>What Happens</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong style="color:#22C55E">Positive</strong></td>
+          <td>"Loved it", "Yes, got it", "Yes, very helpful"</td>
+          <td>Stored. Counter resets. N increments normally.</td>
+        </tr>
+        <tr>
+          <td><strong style="color:#F59E0B">Neutral</strong></td>
+          <td>"It was okay", "Mixed"</td>
+          <td>Stored. Counter resets. N increments normally.</td>
+        </tr>
+        <tr>
+          <td><strong style="color:#EF4444">Negative</strong></td>
+          <td>"Not helpful", "Still fuzzy", "Not really"</td>
+          <td>Stored. Follow-up shown. Counter resets. N gets +6 penalty.</td>
+        </tr>
+        <tr>
+          <td><strong style="color:#94A3B8">Skip</strong></td>
+          <td>(skip link tapped)</td>
+          <td>Logged. Counter resets. N increments normally (skip is neutral).</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════ -->
+<!-- SECTION 4: TIER 2 — PLAY STORE        -->
+<!-- ═══════════════════════════════════════ -->
+<section id="tier2">
+  <span class="section-num">Section 4</span>
+  <h2>Tier 2: When to Show "Rate Us on Play Store"</h2>
+
+  <!-- 9 Gates -->
+  <h3>9 Eligibility Gates</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>#</th><th>Gate</th><th>Default</th><th>Why</th></tr></thead>
+      <tbody>
+        <tr><td><span class="check">1</span></td><td>Days since install >= 7</td><td>7</td><td>Not brand new</td></tr>
+        <tr><td><span class="check">2</span></td><td>Total sessions >= 5</td><td>5</td><td>Consistent engagement</td></tr>
+        <tr><td><span class="check">3</span></td><td>At least 1 micro-rating given</td><td>1</td><td>We have signal</td></tr>
+        <tr><td><span class="check">4</span></td><td>Last micro-rating was positive</td><td>&mdash;</td><td>Current sentiment is good</td></tr>
+        <tr><td><span class="check">5</span></td><td>No active support ticket</td><td>&mdash;</td><td>Not mid-complaint</td></tr>
+        <tr><td><span class="check">6</span></td><td>Happiness moment just occurred</td><td>&mdash;</td><td>Right emotional timing</td></tr>
+        <tr><td><span class="check">7</span></td><td>Play Store ask not shown in last 90 days</td><td>90</td><td>Platform quota compliance</td></tr>
+        <tr><td><span class="check">8</span></td><td>Lifetime Play Store asks &lt; 2</td><td>2</td><td>Don't over-ask</td></tr>
+        <tr><td><span class="check">9</span></td><td>play_store_ask_enabled = true</td><td>true</td><td>Kill switch</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="note blue">Same gates for free and paid users. Free users naturally reach eligibility with fewer activities &mdash; the system self-adjusts.</div>
+
+  <!-- Happiness Moments -->
+  <h3>Happiness Moments</h3>
+  <div class="note blue"><strong>All happiness moments require Gate 4 (last micro-rating was positive) to be true.</strong> A happiness moment alone does not trigger the Play Store ask — the student must also have positive recent sentiment.</div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Moment</th><th>Trigger</th><th>Free User?</th><th>Paid User?</th></tr></thead>
+      <tbody>
+        <tr><td>Test score >= 60%</td><td>Any mock test or live test completed with score >= 60% (first test, tenth test — doesn't matter which)</td><td>Yes</td><td>Yes</td></tr>
+        <tr><td>5th video completed</td><td>Lifetime count of videos watched to 80%+ reaches 5. Only videos that pass the 80% watch-time threshold count.</td><td>Yes (free videos)</td><td>Yes</td></tr>
+        <tr><td>Strong Q-bank session</td><td>70%+ accuracy in the last 20 questions answered</td><td>Yes</td><td>Yes</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Collision Prevention -->
+  <h3>Collision Prevention (Micro-Rating + Play Store in Same Session)</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Situation</th><th>What Happens</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>No collision:</strong> Happiness moment + gates pass + no micro-rating shown this session</td>
+          <td>Show Play Store ask <strong>immediately</strong>. No waiting.</td>
+        </tr>
+        <tr>
+          <td><strong>Collision:</strong> Happiness moment + gates pass + micro-rating WAS shown this session (at any point)</td>
+          <td>Set <code>play_store_deferred = true</code>. Do NOT show Play Store ask. <strong>Wait for the next happiness moment in a future session.</strong></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h4>Deferred Flow (when collision detected)</h4>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Step</th><th>What Happens</th><th>Play Store Ask?</th></tr></thead>
+      <tbody>
+        <tr><td>1. Collision detected in Session A</td><td>Set play_store_deferred = true. Session continues normally.</td><td>No</td></tr>
+        <tr><td>2. Session A ends</td><td>Student closes app or 30+ min inactivity.</td><td>No</td></tr>
+        <tr><td>3. Session B (or later) begins</td><td>Student uses app. System monitors for happiness moment.</td><td>No</td></tr>
+        <tr><td>4. Happiness moment in new session</td><td>Re-check ALL 9 gates fresh. Is last micro-rating still positive? No micro-rating shown this session?</td><td>Depends on gate check</td></tr>
+        <tr><td>4a. All gates pass + no collision</td><td>Show Play Store ask.</td><td><strong>Yes</strong></td></tr>
+        <tr><td>4b. Gates fail (e.g., last rating was negative)</td><td>Cancel. play_store_deferred = false. Must re-qualify from scratch.</td><td>No</td></tr>
+        <tr><td>4c. Another collision (micro-rating also shown this session)</td><td>Defer again. Wait for next session's happiness moment.</td><td>No</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="note amber"><strong>Why wait for a happiness moment, not just "first activity of next session"?</strong> Because Gate 4 only checks the last micro-rating — which could be stale. The student might have 3 bad experiences without being prompted for a micro-rating (counter not at N). A happiness moment is real-time proof the student is happy RIGHT NOW.</div>
+  <div class="note blue"><strong>If the student never hits another happiness moment:</strong> The Play Store ask never fires. And that is correct — if they can't score 60% on a test or 70% on Q-bank, they are not having peak moments worth leveraging.</div>
+
+  <!-- The Prompt -->
+  <h3>The Prompt</h3>
+  <div class="ps-mockup">
+    <h4>Enjoying NPrep?</h4>
+    <p>A quick rating helps fellow nursing students find us.</p>
+    <button class="ps-btn">Rate on Play Store</button>
+    <span class="ps-link">Not now</span>
+  </div>
+
+  <div class="note amber">On "Rate on Play Store" &rarr; trigger Google Play In-App Review API. The native Play Store card appears. We do NOT know what rating the student gives &mdash; API doesn't return this.</div>
+  <div class="note green"><strong>After Play Store API triggered &rarr; RETIRE THE ENTIRE REVIEW SYSTEM.</strong> Set micro_rating_retired = true. No more micro-rating popups. No more Play Store asks. The student's journey is complete. Automatic backend support triggers stay active.</div>
+  <div class="note blue">On "Not now" &rarr; dismiss. Set cooldown 90 days. Increment lifetime count. Student may be asked once more (lifetime cap = 2).</div>
+</section>
+
+<!-- ═══════════════════════════════════════ -->
+<!-- SECTION 5: SUPPORT TRIGGERS            -->
+<!-- ═══════════════════════════════════════ -->
+<section id="triggers">
+  <span class="section-num">Section 5</span>
+  <h2>Automatic Support Triggers</h2>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Signal</th><th>Action</th><th>Priority</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>Average micro-rating drops below 2.0</td>
+          <td>Auto-create support ticket. Team reaches out: "We noticed you're not having a great experience. How can we help?"</td>
+          <td><span style="color:#D97706;font-weight:600">High</span></td>
+        </tr>
+        <tr>
+          <td>2 consecutive negative ratings</td>
+          <td>Same outreach trigger</td>
+          <td><span style="color:#D97706;font-weight:600">High</span></td>
+        </tr>
+        <tr>
+          <td>"Found a wrong answer" in Q-bank follow-up</td>
+          <td>Auto-create content review ticket with question IDs</td>
+          <td><span style="color:#DC2626;font-weight:700">Critical</span></td>
+        </tr>
+        <tr>
+          <td>3 consecutive skips</td>
+          <td>Flag for review &mdash; student may be disengaged</td>
+          <td><span style="color:#64748B;font-weight:500">Low</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="note green">Detractor detection is immediate and proactive — the student doesn't have to fill a survey. The system detects unhappiness from behavioral signals and acts.</div>
+</section>
+
+<!-- ═══════════════════════════════════════ -->
+<!-- SECTION 6: EDGE CASES                  -->
+<!-- ═══════════════════════════════════════ -->
+<section id="edge-cases">
+  <span class="section-num">Section 6</span>
+  <h2>Edge Cases</h2>
+  <p style="margin-bottom:16px;color:#64748B;font-size:14px">Click each case to expand details.</p>
+
+  <div id="edge-list"></div>
+</section>
+
+<!-- ═══════════════════════════════════════ -->
+<!-- SECTION 7: FLOW DIAGRAMS               -->
+<!-- ═══════════════════════════════════════ -->
+<section id="mermaid">
+  <span class="section-num">Section 7</span>
+  <h2>Flow Diagrams</h2>
+  <p style="margin-bottom:24px;color:#64748B;font-size:14px">Visual flows rendered below. Expand "Copy for Whimsical" to get the raw Mermaid code.</p>
+
+  <!-- Flow 1 -->
+  <h3>Flow 1: Complete System Flow (Tier 1 + Tier 2)</h3>
+  <div class="mermaid-diagram">
+    <pre class="mermaid">flowchart TD
+    A[Student Completes Activity] --> B{Activity Completed?\nF1 Criteria}
+    B -->|No| Z[Skip Silently]
+    B -->|Yes| C{Eligible?\nNot already rated + no crash}
+    C -->|No| Z
+    C -->|Yes| D[Increment Counter]
+    D --> E{Counter = N?}
+    E -->|No| Z
+    E -->|Yes| F{Session Cap Clear?}
+    F -->|No| G[Defer:\nCounter stays at N]
+    F -->|Yes| H{Monthly Cap Clear?}
+    H -->|No| G
+    H -->|Yes| I[Show Micro-Rating Popup]
+    I --> J{Student Response}
+    J -->|Positive| K[Store + Reset Counter\n+ N increases normally]
+    J -->|Neutral| K
+    J -->|Negative| L[Store + Reset Counter\n+ N increases + 6 penalty]
+    J -->|Skip| M[Log + Reset Counter\n+ N increases normally]
+    K --> N[Update Sentiment Data]
+    L --> N
+    M --> N
+    N --> O{Tier 2:\nAll 9 Gates Pass?}
+    O -->|No| Z
+    O -->|Yes| P{Happiness Moment?}
+    P -->|No| Q[Stay Eligible\nWait for Moment]
+    P -->|Yes| R{Micro-Rating Shown\nThis Session?}
+    R -->|No Collision| S[Show Play Store Ask]
+    R -->|Collision| R2[Defer to\nFuture Session]
+    R2 --> R3[Wait for Next Session]
+    R3 --> R4{Happiness Moment\nin New Session?}
+    R4 -->|No| R3
+    R4 -->|Yes| R5{Re-check All\n9 Gates Fresh}
+    R5 -->|Fail| R6[Cancel\nMust Re-qualify]
+    R5 -->|Pass + No Collision| S
+    R5 -->|Pass + Collision| R2
+    S --> S2{Student Response}
+    S2 -->|Rate on Play Store| T[Trigger Google Play API\n+ Retire System]
+    S2 -->|Not now| U[Dismiss\n+ 90 day cooldown]
+
+    style A fill:#dbeafe,stroke:#2563eb,color:#1e293b
+    style I fill:#bbf7d0,stroke:#16a34a,color:#1e293b
+    style S fill:#bbf7d0,stroke:#16a34a,color:#1e293b
+    style T fill:#86efac,stroke:#16a34a,color:#1e293b
+    style Z fill:#fecaca,stroke:#dc2626,color:#1e293b
+    style R6 fill:#fecaca,stroke:#dc2626,color:#1e293b
+    style G fill:#fef3c7,stroke:#d97706,color:#1e293b
+    style R2 fill:#fef3c7,stroke:#d97706,color:#1e293b
+    style L fill:#fed7aa,stroke:#ea580c,color:#1e293b</pre>
+  </div>
+  <details class="whimsical-code">
+    <summary>Copy for Whimsical</summary>
+    <div class="code-block">
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+      <pre>flowchart TD
+    A[Student Completes Activity] --> B{Activity Completed? F1 Criteria}
+    B -->|No| Z[Skip Silently]
+    B -->|Yes| C{Eligible? Not already rated + no crash}
+    C -->|No| Z
+    C -->|Yes| D[Increment Counter]
+    D --> E{Counter = N?}
+    E -->|No| Z
+    E -->|Yes| F{Session Cap Clear?}
+    F -->|No| G[Defer: Counter stays at N]
+    F -->|Yes| H{Monthly Cap Clear?}
+    H -->|No| G
+    H -->|Yes| I[Show Micro-Rating Popup]
+    I --> J{Student Response}
+    J -->|Positive| K[Store + Reset Counter + N increases normally]
+    J -->|Neutral| K
+    J -->|Negative| L[Store + Reset Counter + N increases + 6 penalty]
+    J -->|Skip| M[Log + Reset Counter + N increases normally]
+    K --> N[Update Sentiment Data]
+    L --> N
+    M --> N
+    N --> O{Tier 2 Check: All 9 Gates Pass?}
+    O -->|No| Z
+    O -->|Yes| P{Happiness Moment?}
+    P -->|No| Q[Stay Eligible - Wait for Moment]
+    P -->|Yes| R{Micro-Rating Shown This Session?}
+    R -->|No - No Collision| S[Show Play Store Ask Immediately]
+    R -->|Yes - Collision| R2[Defer to Future Session]
+    R2 --> R3[Wait for Next Session]
+    R3 --> R4{Happiness Moment in New Session?}
+    R4 -->|No| R3
+    R4 -->|Yes| R5{Re-check All 9 Gates Fresh}
+    R5 -->|Fail| R6[Cancel. Must Re-qualify.]
+    R5 -->|Pass + No Collision| S
+    R5 -->|Pass + Another Collision| R2
+    S --> S2{Student Response}
+    S2 -->|Rate on Play Store| T[Trigger Google Play API + Retire System]
+    S2 -->|Not now| U[Dismiss + 90 day cooldown]</pre>
+    </div>
+  </details>
+
+  <!-- Flow 2 -->
+  <h3>Flow 2: Progressive N Calculation</h3>
+  <div class="mermaid-diagram">
+    <pre class="mermaid">flowchart TD
+    A[Rating Given or Skip] --> B{Was Response Negative?}
+    B -->|No| C[Increment =\nrating_number + 1]
+    B -->|Yes| D[Increment =\nrating_number + 1 + 6]
+    C --> E[New N =\nCurrent N + Increment]
+    D --> E
+    E --> F{Total Lifetime\nRatings >= 15?}
+    F -->|Yes| G[Retire Micro-Ratings\nPermanently]
+    F -->|No| H{Total This Month\n>= Monthly Cap?}
+    H -->|Yes| I[Pause Until\nNext Month]
+    H -->|No| J[System Active\nWait for Next Activity]
+
+    style A fill:#dbeafe,stroke:#2563eb,color:#1e293b
+    style G fill:#fecaca,stroke:#dc2626,color:#1e293b
+    style I fill:#fef3c7,stroke:#d97706,color:#1e293b
+    style J fill:#bbf7d0,stroke:#16a34a,color:#1e293b
+    style D fill:#fed7aa,stroke:#ea580c,color:#1e293b</pre>
+  </div>
+  <details class="whimsical-code">
+    <summary>Copy for Whimsical</summary>
+    <div class="code-block">
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+      <pre>flowchart TD
+    A[Rating Given or Skip] --> B{Was Response Negative?}
+    B -->|No| C[Increment = rating_number + 1]
+    B -->|Yes| D[Increment = rating_number + 1 + 6]
+    C --> E[New N = Current N + Increment]
+    D --> E
+    E --> F{Total Lifetime Ratings >= 15?}
+    F -->|Yes| G[Retire Micro-Ratings Permanently]
+    F -->|No| H{Total This Month >= Monthly Cap?}
+    H -->|Yes| I[Pause Until Next Month]
+    H -->|No| J[System Active - Wait for Next Eligible Activity]</pre>
+    </div>
+  </details>
+
+  <!-- Flow 3 -->
+  <h3>Flow 3: Tier 2 Play Store Eligibility</h3>
+  <div class="mermaid-diagram">
+    <pre class="mermaid">flowchart TD
+    A[Check Play Store\nEligibility] --> B{Days Since\nInstall >= 7?}
+    B -->|No| FAIL[Not Eligible]
+    B -->|Yes| C{Total\nSessions >= 5?}
+    C -->|No| FAIL
+    C -->|Yes| D{At Least 1\nMicro-Rating Given?}
+    D -->|No| FAIL
+    D -->|Yes| E{Last Micro-Rating\nWas Positive?}
+    E -->|No| FAIL
+    E -->|Yes| F{No Active\nSupport Ticket?}
+    F -->|No| FAIL
+    F -->|Yes| G{Play Store Ask Not\nShown in Last 90 Days?}
+    G -->|No| FAIL
+    G -->|Yes| H{Lifetime Play Store\nAsks under 2?}
+    H -->|No| RETIRED[Permanently Done]
+    H -->|Yes| I{play_store_ask_enabled\n= true?}
+    I -->|No| FAIL
+    I -->|Yes| J[ELIGIBLE\nWait for Happiness Moment]
+    J --> K{Happiness Moment?}
+    K -->|Test Score >= 60%| SHOW[Show Play Store Ask]
+    K -->|5th Video at 80%+| SHOW
+    K -->|Q-Bank 70%+ last 20| SHOW
+    K -->|No Moment Yet| WAIT[Keep Monitoring]
+
+    style A fill:#dbeafe,stroke:#2563eb,color:#1e293b
+    style FAIL fill:#fecaca,stroke:#dc2626,color:#1e293b
+    style RETIRED fill:#e2e8f0,stroke:#64748b,color:#1e293b
+    style J fill:#fef3c7,stroke:#d97706,color:#1e293b
+    style SHOW fill:#bbf7d0,stroke:#16a34a,color:#1e293b</pre>
+  </div>
+  <details class="whimsical-code">
+    <summary>Copy for Whimsical</summary>
+    <div class="code-block">
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+      <pre>flowchart TD
+    A[Check Play Store Eligibility] --> B{Days Since Install >= 7?}
+    B -->|No| FAIL[Not Eligible]
+    B -->|Yes| C{Total Sessions >= 5?}
+    C -->|No| FAIL
+    C -->|Yes| D{At Least 1 Micro-Rating Given?}
+    D -->|No| FAIL
+    D -->|Yes| E{Last Micro-Rating Was Positive?}
+    E -->|No| FAIL
+    E -->|Yes| F{No Active Support Ticket?}
+    F -->|No| FAIL
+    F -->|Yes| G{Play Store Ask Not Shown in Last 90 Days?}
+    G -->|No| FAIL
+    G -->|Yes| H{Lifetime Play Store Asks under 2?}
+    H -->|No| RETIRED[Permanently Done]
+    H -->|Yes| I{play_store_ask_enabled = true?}
+    I -->|No| FAIL
+    I -->|Yes| J[ELIGIBLE - Wait for Happiness Moment]
+    J --> K{Happiness Moment Detected?}
+    K -->|Any Test Score >= 60%| SHOW[Show Play Store Ask]
+    K -->|5th Video Completed at 80%+ watched| SHOW
+    K -->|Q-Bank: 70%+ in last 20 Qs| SHOW
+    K -->|No Moment Yet| WAIT[Keep Monitoring]</pre>
+    </div>
+  </details>
+</section>
+
+</main>
+
+<!-- TOAST -->
+<div class="toast" id="toast">Copied to clipboard!</div>
+
+<script>
+// ═══════════════════════════════════════
+// EDGE CASES DATA + RENDER
+// ═══════════════════════════════════════
+const edgeCases = [
+  { n:1, title:"App crash during activity", what:"NOT completed. Counter doesn't increment. Recovery screen on next launch.", why:"Crash = bad experience. Don't prompt after." },
+  { n:2, title:"Timer expires, 0 answers", what:"NOT completed. No counter increment.", why:"Zero engagement = no experience to rate. Fails both the 25% questions and 40% duration thresholds." },
+  { n:3, title:"Timer expires, 30/50 answered (60% questions, 100% duration)", what:"COMPLETED. Counter increments. Prompt shown if eligible.", why:"Passes both thresholds: 60% questions attempted (above 25%) and 100% duration spent (above 40%)." },
+  { n:'3b', title:"Student submits 10/50 questions in 15 min of a 60-min test", what:"NOT completed. Counter doesn't increment.", why:"20% questions attempted (below 25%) and 25% duration (below 40%). Student barely engaged — insufficient experience to rate." },
+  { n:'3c', title:"Student submits 15/50 questions (30%) in 20 min of a 60-min test (33%)", what:"NOT completed. Only passes question threshold (30% >= 25%) but fails duration threshold (33% is below 40%).", why:"Both thresholds must be met. Rushing through 15 questions in 20 minutes suggests the student gave up early." },
+  { n:4, title:"Video scrubbed to 80% in 10 sec", what:"NOT completed. Tracks actual play time, not seek position.", why:"Scrubbing is not watching." },
+  { n:5, title:"Video at 2x speed, 100% content", what:"COMPLETED. Tracks content progression, not clock time.", why:"2x speed is legitimate study method." },
+  { n:6, title:"Q-bank: 19 questions", what:"NOT completed. Below 20 threshold.", why:"One short is still short." },
+  { n:7, title:"Q-bank: 20 questions, all wrong", what:"COMPLETED. Score doesn't affect completion.", why:"Wrong answers = valid experience to rate." },
+  { n:8, title:"Same activity rated before (rewatch/retake)", what:"NOT eligible. Counter doesn't increment.", why:"Re-rating gives no new data." },
+  { n:9, title:"Session cap hit, counter at N", what:"Counter stays at N. Prompt deferred. First eligible activity in next session triggers it.", why:"Max 1 prompt per session." },
+  { n:10, title:"Monthly cap hit (6/6 used)", what:"Counter stays at N. N doesn't change. Deferred to next month.", why:"Monthly safety net." },
+  { n:11, title:"Student skips the prompt", what:"Counter resets. N increases (skip = handled). No backoff.", why:"Skip is neutral, not negative." },
+  { n:12, title:"Negative rating \u2192 backoff", what:"N gets +6 permanent penalty. All future N values shifted up.", why:"Unhappy students need more space. Permanently." },
+  { n:13, title:"Student inactive 7+ days, returns", what:"Counter resets to 0. N unchanged. 3 activities grace before next prompt.", why:"Returning students need space to re-engage." },
+  { n:14, title:"Video 85%, student taps Back", what:"COMPLETED for counter. Prompt NOT shown (not at natural pause).", why:"Out-of-context prompt is worse than no prompt." },
+  { n:15, title:"Two devices simultaneously", what:"Counter is server-side, atomic increments. First device to hit N gets prompt.", why:"Prevents double-prompting." },
+  { n:16, title:"Student clears app cache", what:"No effect. Counter is server-side, tied to user_id.", why:"Server is source of truth." },
+  { n:17, title:"Lifetime 15 ratings reached", what:"Micro-ratings retired permanently. Acknowledgment shown. Play Store ask still works (if not already done).", why:"15 ratings = enough product data. Progressive N has already made prompts near-invisible by this point." },
+  { n:'17b', title:"Student completes Play Store review", what:"Entire review system retired — both micro-ratings AND Play Store ask. No more prompts of any kind. Automatic support triggers (backend) stay active.", why:"The goal is achieved. Continuing to prompt is pure friction. Respect the student." },
+  { n:18, title:"Play Store API quota exhausted", what:"Nothing visible. Student taps \"Rate\" but card doesn't appear. Log event. Set cooldown 90 days.", why:"Google's quota is silent. We can't control it." },
+  { n:19, title:"Free user upgrades to paid", what:"All history carries over. No resets. Wait 7 days before Play Store eligibility.", why:"Let them experience paid features first." },
+  { n:20, title:"\"Found a wrong answer\" selected", what:"Auto-creates critical content ticket with session question IDs.", why:"Wrong answers are the highest-priority content defect." },
+  { n:21, title:"Config changed mid-cycle (e.g., monthly cap 6\u21924)", what:"Takes effect immediately. If student already at 5/6 and cap drops to 4, they're over-cap. No more prompts this month.", why:"Remote config is real-time." },
+  { n:22, title:"Student closes app before interacting with popup", what:"Popup opportunity lost. Counter stays at N. Next session, first eligible activity re-triggers.", why:"Don't re-show stale prompts." },
+];
+
+const edgeList = document.getElementById('edge-list');
+edgeCases.forEach(ec => {
+  const details = document.createElement('details');
+  details.className = 'edge-case';
+  details.innerHTML = `
+    <summary>
+      <span class="ec-num">${ec.n}</span>
+      <span class="ec-title">${ec.title}</span>
+      <span class="ec-chevron">\u25B6</span>
+    </summary>
+    <div class="ec-body">
+      <p><strong>What happens:</strong> ${ec.what}</p>
+      <p style="margin-top:6px"><strong>Why:</strong> ${ec.why}</p>
+    </div>
+  `;
+  edgeList.appendChild(details);
+});
+
+// ═══════════════════════════════════════
+// COPY TO CLIPBOARD
+// ═══════════════════════════════════════
+function copyCode(btn) {
+  const pre = btn.parentElement.querySelector('pre');
+  navigator.clipboard.writeText(pre.textContent).then(() => {
+    showToast('Copied to clipboard!');
+    btn.textContent = 'Copied!';
+    setTimeout(() => btn.textContent = 'Copy', 2000);
+  });
+}
+
+function showToast(msg) {
+  const toast = document.getElementById('toast');
+  toast.textContent = msg;
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 2000);
+}
+
+// ═══════════════════════════════════════
+// ACTIVE NAV HIGHLIGHT
+// ═══════════════════════════════════════
+const sections = document.querySelectorAll('section[id]');
+const navLinks = document.querySelectorAll('.nav-inner a');
+
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      navLinks.forEach(a => a.classList.remove('active'));
+      const active = document.querySelector(`.nav-inner a[href="#${entry.target.id}"]`);
+      if (active) active.classList.add('active');
+    }
+  });
+}, { rootMargin: '-80px 0px -60% 0px', threshold: 0 });
+
+sections.forEach(s => observer.observe(s));
+</script>
+</body>
+</html>

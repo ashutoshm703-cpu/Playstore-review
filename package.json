@@ -1,0 +1,11 @@
+{
+  "name": "nprep-eng-spec",
+  "private": true,
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "vite --port 5178"
+  },
+  "devDependencies": {
+    "vite": "^6.0.0"
+  }
+}

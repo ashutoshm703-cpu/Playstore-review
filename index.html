@@ -376,7 +376,7 @@ details.whimsical-code[open] summary{border-bottom:1px solid #e2e8f0}
         <span class="flow-box decision">Counter = N?</span>
         <span class="flow-arrow">&rarr;</span>
         <span class="flow-label">YES</span>
-        <span class="flow-box decision">Session Cap Clear?</span>
+        <span class="flow-box decision">5-Day Gap Clear?</span>
         <span class="flow-arrow">&rarr;</span>
         <span class="flow-label">YES</span>
         <span class="flow-box result">Show Micro-Rating Popup (Tier 1)</span>
@@ -479,7 +479,6 @@ N = 3 (always)
 N = 6 (after negative response, next cycle only, then back to 3)
 Minimum gap = 5 calendar days since last prompt
 Lifetime cap = 15 ratings
-Session cap = 1 per session
 Inactivity reset = 3+ consecutive days → counter resets to 0 (gap timer continues as-is)
   </div>
 
@@ -543,7 +542,7 @@ Activity 3 → counter = 3 → CHECK: 5 days since last prompt?
     <table>
       <thead><tr><th>Scenario</th><th>Activity Completed?</th><th>Counter Increments?</th><th>Prompt Shown?</th></tr></thead>
       <tbody>
-        <tr><td>Test submitted, results screen visible</td><td>Yes</td><td>Yes</td><td>Yes (if counter=N and session cap clear)</td></tr>
+        <tr><td>Test submitted, results screen visible</td><td>Yes</td><td>Yes</td><td>Yes (if counter=N and 5-day gap clear)</td></tr>
         <tr><td>Video reaches 100% (natural end)</td><td>Yes</td><td>Yes</td><td>Yes</td></tr>
         <tr><td>Video 85%, student taps "Next Video"</td><td>Yes</td><td>Yes</td><td>Yes (transition screen)</td></tr>
         <tr><td>Video 85%, student taps Back to exit</td><td>Yes</td><td>Yes</td><td>NO &mdash; moment not right. Deferred.</td></tr>
@@ -563,7 +562,6 @@ Activity 3 → counter = 3 → CHECK: 5 days since last prompt?
         <tr><td>Negative rating given</td><td>Becomes 6 for next cycle only</td><td>Resets to 0</td><td>Resets (today = new start)</td></tr>
         <tr><td>Student skips the prompt</td><td>Stays at 3 (skip is neutral)</td><td>Resets to 0</td><td>Resets (today = new start)</td></tr>
         <tr><td>Counter hits N but 5-day gap not met</td><td>No change</td><td>Stays at N (waits)</td><td>No change (still counting)</td></tr>
-        <tr><td>Session cap defers prompt</td><td>No change</td><td>Stays at N</td><td>No change</td></tr>
         <tr><td>Student inactive 3+ days, returns</td><td>No change</td><td>Resets to 0 (grace period)</td><td>No change (continues counting, clears naturally)</td></tr>
       </tbody>
     </table>
@@ -853,33 +851,7 @@ Activity 3 → counter = 3 → CHECK: 5 days since last prompt?
   <div class="note green"><strong>Result:</strong> Sneha's counter was at 2 before her break. On return, it reset to 0 — giving her 3 activities of grace before the next prompt. The 5-day gap had already cleared during her absence (6 days > 5). No special gap handling needed.</div>
 
   <!-- Example 4 -->
-  <h3>Example 4: Amit — Session Cap Deferral</h3>
-  <div class="note blue">Covers: Session cap (max 1 per session), deferral to next session</div>
-  <div class="table-wrap">
-    <table>
-      <thead><tr><th>Time</th><th>What Amit Does</th><th>Counter</th><th>Session Prompt Used?</th><th>What Happens</th></tr></thead>
-      <tbody>
-        <tr><td>7:00 PM</td><td>Opens app (Session A starts)</td><td>0</td><td>No</td><td>—</td></tr>
-        <tr><td>7:15 PM</td><td>Mock Test</td><td>1</td><td>No</td><td>Counter = 1.</td></tr>
-        <tr><td>7:45 PM</td><td>Video</td><td>2</td><td>No</td><td>Counter = 2.</td></tr>
-        <tr><td>8:15 PM</td><td>Q-Bank (25 Qs)</td><td>3</td><td>No</td><td><strong>PROMPT SHOWN.</strong> Gap clear. Taps "Yes, got it." Counter resets. <strong>Session cap now used.</strong></td></tr>
-        <tr><td>8:30 PM</td><td>Another video</td><td>1</td><td>Yes</td><td>Counter = 1.</td></tr>
-        <tr><td>8:50 PM</td><td>Mock Test</td><td>2</td><td>Yes</td><td>Counter = 2.</td></tr>
-        <tr><td>9:10 PM</td><td>Q-Bank (20 Qs)</td><td>3</td><td>Yes</td><td>Counter = 3 = N. BUT <strong>session cap already used. Counter stays at 3. DEFERRED.</strong></td></tr>
-        <tr><td>9:30 PM</td><td>Another video</td><td>3 (unchanged)</td><td>Yes</td><td>Still deferred. Counter stays at 3.</td></tr>
-        <tr><td>10:00 PM</td><td>Closes app</td><td>3</td><td>—</td><td>Session A ends.</td></tr>
-        <tr><td colspan="5" style="text-align:center;color:#64748B;font-style:italic">Next day (Session B)</td></tr>
-        <tr><td>Next day 7:00 PM</td><td>Opens app (Session B starts)</td><td>3</td><td>No (new session)</td><td>Counter is still at 3 from yesterday.</td></tr>
-        <tr><td>Next day 7:10 PM</td><td>Video lecture</td><td>3 (already at N)</td><td>No</td><td><strong>Counter already at N. Session cap clear. Gap = 1 day (NOT >= 5). Still waiting for gap.</strong></td></tr>
-        <tr><td colspan="5" style="text-align:center;color:#64748B;font-style:italic">...gap clears on Day 5 after original prompt...</td></tr>
-        <tr><td>Day 6</td><td>Any activity</td><td>3</td><td>No</td><td>5 days</td><td><strong>Counter at N. Gap clear. Session cap clear. PROMPT SHOWN.</strong></td></tr>
-      </tbody>
-    </table>
-  </div>
-  <div class="note amber"><strong>Result:</strong> Amit did 7 activities in one evening session but only saw 1 prompt. The deferred prompt waited for both the session boundary AND the 5-day gap to clear.</div>
-
-  <!-- Example 5 -->
-  <h3>Example 5: Kavya — Free User End-to-End Journey</h3>
+  <h3>Example 4: Kavya — Free User End-to-End Journey</h3>
   <div class="note blue">Covers: Free user with limited content, reaching Play Store ask, system retirement</div>
   <div class="table-wrap">
     <table>
@@ -901,14 +873,14 @@ Activity 3 → counter = 3 → CHECK: 5 days since last prompt?
   <div class="note green"><strong>Result:</strong> Free user reached Play Store ask in 10 days with only 2 micro-ratings. The system worked despite limited content. Kavya was never blocked by high thresholds.</div>
 
   <!-- Example 6 -->
-  <h3>Example 6: Vikram — Collision + Deferred Play Store Ask</h3>
+  <h3>Example 5: Vikram — Collision + Deferred Play Store Ask</h3>
   <div class="note blue">Covers: Micro-rating and Play Store eligibility in same session, deferral to next session's happiness moment</div>
   <div class="table-wrap">
     <table>
       <thead><tr><th>Day</th><th>What Vikram Does</th><th>What Happens</th></tr></thead>
       <tbody>
         <tr><td>Day 30</td><td>Session starts. All Tier 2 gates already passing (5+ ratings given, all positive, 7+ days, 5+ sessions).</td><td>Vikram is Play Store eligible. Waiting for happiness moment.</td></tr>
-        <tr><td>Day 30</td><td>Watches video (counter was at 2, now 3). Gap = 6 days.</td><td><strong>Micro-rating PROMPT SHOWN.</strong> "Did this lecture clear your concept?" Taps "Yes, got it." Counter resets. Session cap used.</td></tr>
+        <tr><td>Day 30</td><td>Watches video (counter was at 2, now 3). Gap = 6 days.</td><td><strong>Micro-rating PROMPT SHOWN.</strong> "Did this lecture clear your concept?" Taps "Yes, got it." Counter resets. Gap timer restarts.</td></tr>
         <tr><td>Day 30</td><td>Takes Mock Test, scores 68% (happiness moment!)</td><td><strong>COLLISION DETECTED.</strong> Micro-rating was already shown this session. Play Store ask is <strong>DEFERRED.</strong> Set play_store_deferred = true.</td></tr>
         <tr><td>Day 31</td><td>New session. Watches a video.</td><td>No happiness moment in this session. Play Store ask stays deferred.</td></tr>
         <tr><td>Day 32</td><td>New session. Q-Bank (20 Qs, 55% accuracy).</td><td>Not a happiness moment (55% accuracy on last 20 Qs, need 70%). Deferred.</td></tr>
@@ -919,7 +891,7 @@ Activity 3 → counter = 3 → CHECK: 5 days since last prompt?
   <div class="note amber"><strong>Result:</strong> The collision on Day 30 was handled gracefully. Vikram never saw two popups in one session. The Play Store ask waited for a genuine happiness moment in a clean session (Day 33). 3 days of delay — barely noticeable.</div>
 
   <!-- Example 7 -->
-  <h3>Example 7: Meera — "Not Now" on Play Store + Lifetime Cap</h3>
+  <h3>Example 6: Meera — "Not Now" on Play Store + Lifetime Cap</h3>
   <div class="note blue">Covers: Play Store "Not now", 90-day cooldown, lifetime cap of 2, system continues</div>
   <div class="table-wrap">
     <table>
@@ -935,7 +907,7 @@ Activity 3 → counter = 3 → CHECK: 5 days since last prompt?
   <div class="note amber"><strong>Result:</strong> Meera declined twice. System respects her boundary — never asks again. Micro-ratings continue for product data until 15. She contributed feedback but chose not to review publicly. That's fine.</div>
 
   <!-- Example 8 -->
-  <h3>Example 8: Arjun — Lifetime Cap Reached</h3>
+  <h3>Example 7: Arjun — Lifetime Cap Reached</h3>
   <div class="note blue">Covers: 15 ratings → retirement, acknowledgment message</div>
   <div class="table-wrap">
     <table>
@@ -952,7 +924,7 @@ Activity 3 → counter = 3 → CHECK: 5 days since last prompt?
   <div class="note green"><strong>Result:</strong> 15 ratings over ~3.5 months. ~1 per week. Graceful exit with acknowledgment. Arjun never felt overwhelmed.</div>
 
   <!-- Example 9 -->
-  <h3>Example 9: Divya — Video "Not at Natural Pause Point"</h3>
+  <h3>Example 8: Divya — Video "Not at Natural Pause Point"</h3>
   <div class="note blue">Covers: Video 85% watched but student exits mid-flow, prompt skipped but counter incremented</div>
   <div class="table-wrap">
     <table>
@@ -966,7 +938,7 @@ Activity 3 → counter = 3 → CHECK: 5 days since last prompt?
   <div class="note amber"><strong>Key point:</strong> "Completed" and "prompt-worthy" are different. The video completion incremented the counter, but the prompt waited for the next natural pause point. No prompt was lost — just delayed to a better moment.</div>
 
   <!-- Example 10 -->
-  <h3>Example 10: Ravi — "Found a Wrong Answer" in Q-Bank</h3>
+  <h3>Example 9: Ravi — "Found a Wrong Answer" in Q-Bank</h3>
   <div class="note blue">Covers: Negative follow-up with critical "wrong answer" flag, auto-ticket creation</div>
   <div class="table-wrap">
     <table>
@@ -1016,10 +988,8 @@ Activity 3 → counter = 3 → CHECK: 5 days since last prompt?
     C -->|Not eligible| Z
     D --> E{Counter >= N? N=3 or N=6}
     E -->|No| Z
-    E -->|Yes| F{Session Cap Clear?}
-    F -->|No| G[Defer: Counter stays at N]
-    F -->|Yes| H{5+ Days Since Last Prompt?}
-    H -->|No| G2[Waits for gap to clear]
+    E -->|Yes| H{5+ Days Since Last Prompt?}
+    H -->|No| G2[Counter stays at N, waits for gap]
     H -->|Yes| I[Show Micro-Rating Popup]
     I --> J{Student Response}
     J -->|Positive| K[Reset Counter, N stays 3]
@@ -1064,9 +1034,7 @@ Activity 3 → counter = 3 → CHECK: 5 days since last prompt?
     C -->|No| D[Wait]
     C -->|Yes| E{5+ Days Gap?}
     E -->|No| F[Counter stays, waits]
-    E -->|Yes| G{Session Cap?}
-    G -->|Used| H[Defer to next session]
-    G -->|Clear| I[Show Prompt]
+    E -->|Yes| I[Show Prompt]
     I --> J{Response?}
     J -->|Positive/Neutral| K[N=3, Counter=0, Gap resets]
     J -->|Negative| L[N=6 next cycle, Counter=0, Gap resets]
@@ -1137,7 +1105,6 @@ const edgeCases = [
   { n:6, title:"Q-bank: 19 questions", what:"NOT completed. Below 20 threshold.", why:"One short is still short." },
   { n:7, title:"Q-bank: 20 questions, all wrong", what:"COMPLETED. Score doesn't affect completion.", why:"Wrong answers = valid experience to rate." },
   { n:8, title:"Same activity rated before (rewatch/retake)", what:"NOT eligible. Counter doesn't increment.", why:"Re-rating gives no new data." },
-  { n:9, title:"Session cap hit, counter at N", what:"Counter stays at N. Prompt deferred. First eligible activity in next session triggers it.", why:"Max 1 prompt per session." },
   { n:10, title:"Counter hits N but 5-day gap not met", what:"Counter stays at N. Waits for gap to clear. Next eligible activity after gap clears triggers the prompt.", why:"Prevents front-loading. Ensures even spacing (~1 prompt per 5 days max)." },
   { n:11, title:"Student skips the prompt", what:"Counter resets to 0. N stays at 3 (skip is neutral). 5-day gap timer resets.", why:"Skip is neutral, not negative. No backoff." },
   { n:12, title:"Negative rating \u2192 backoff", what:"N becomes 6 for the next cycle ONLY. After the next positive/neutral/skip, N returns to 3.", why:"Temporary backoff. One bad experience shouldn't haunt permanently." },

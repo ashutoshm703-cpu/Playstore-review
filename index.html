@@ -365,6 +365,7 @@ details.whimsical-code[open] summary{border-bottom:1px solid #e2e8f0}
     <a href="#tier2">Tier 2: Play Store</a>
     <a href="#triggers">Support Triggers</a>
     <a href="#edge-cases">Edge Cases</a>
+    <a href="#examples">Examples</a>
     <a href="#mermaid">Flow Diagrams</a>
   </div>
 </nav>
@@ -843,10 +844,219 @@ Activity 3 → counter = 3 → CHECK: 5 days since last prompt?
 </section>
 
 <!-- ═══════════════════════════════════════ -->
-<!-- SECTION 7: FLOW DIAGRAMS               -->
+<!-- SECTION 7: EXAMPLES                     -->
+<!-- ═══════════════════════════════════════ -->
+<section id="examples">
+  <span class="section-num">Section 7</span>
+  <h2>Examples — Real Student Journeys</h2>
+  <p style="margin-bottom:24px;color:#64748B;font-size:14px">Each example traces through the exact system logic step by step. Use these to verify implementation.</p>
+
+  <!-- Example 1 -->
+  <h3>Example 1: Priya — Happy Flow (Active Paid Student)</h3>
+  <div class="note blue">Covers: N=3, 5-day gap, positive rating, Play Store ask (no collision)</div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Day</th><th>What Priya Does</th><th>Counter</th><th>N</th><th>Gap Since Last Prompt</th><th>What Happens</th></tr></thead>
+      <tbody>
+        <tr><td>Day 1</td><td>Completes Mock Test #1 (score 68%)</td><td>1</td><td>3</td><td>N/A (no prompt yet)</td><td>Counter increments. Not at N yet.</td></tr>
+        <tr><td>Day 1</td><td>Watches Video Lecture</td><td>2</td><td>3</td><td>N/A</td><td>Counter increments. Not at N yet.</td></tr>
+        <tr><td>Day 2</td><td>Q-Bank session (25 Qs, 76%)</td><td>3</td><td>3</td><td>N/A (first ever)</td><td><strong>Counter = N. No prior prompt. PROMPT SHOWN.</strong> Popup: "Were these questions good practice?" Priya taps "Yes, very helpful." Counter resets to 0. Gap timer starts (Day 2).</td></tr>
+        <tr><td>Day 2</td><td>Watches another video</td><td>1</td><td>3</td><td>0 days</td><td>Counter increments. Not at N.</td></tr>
+        <tr><td>Day 3</td><td>Mock Test #2 (score 72%)</td><td>2</td><td>3</td><td>1 day</td><td>Counter increments. Not at N.</td></tr>
+        <tr><td>Day 4</td><td>Q-Bank session (20 Qs)</td><td>3</td><td>3</td><td>2 days</td><td>Counter = N. BUT gap = 2 days (need 5). <strong>Counter stays at 3. Waits for gap.</strong></td></tr>
+        <tr><td>Day 5</td><td>Watches video</td><td>3 (unchanged)</td><td>3</td><td>3 days</td><td>Counter already at N. Gap still only 3 days. Waiting.</td></tr>
+        <tr><td>Day 6</td><td>Mock Test #3 (score 65%)</td><td>3 (unchanged)</td><td>3</td><td>4 days</td><td>Gap = 4 days. Still less than 5. Waiting.</td></tr>
+        <tr><td>Day 7</td><td>Q-Bank session (22 Qs)</td><td>3 (unchanged)</td><td>3</td><td>5 days</td><td><strong>Counter = 3 AND gap = 5 days. PROMPT SHOWN.</strong> Popup: "Were these questions good practice?" Priya taps "Mixed — some good, some not." Counter resets to 0. Gap timer restarts (Day 7).</td></tr>
+        <tr><td colspan="6" style="text-align:center;color:#64748B;font-style:italic">...pattern continues every ~5-7 days...</td></tr>
+        <tr><td>Day 45</td><td>Mock Test #8 (score 62%)</td><td>3</td><td>3</td><td>5 days</td><td><strong>PROMPT SHOWN.</strong> This is Priya's 8th micro-rating. Lifetime count = 8/15.</td></tr>
+        <tr><td>Day 45</td><td>Same session — score was 62% (happiness moment)</td><td>—</td><td>—</td><td>—</td><td><strong>Tier 2 check:</strong> Last rating positive? Yes ("Loved it"). 7+ days since install? Yes. 5+ sessions? Yes. No support ticket? Yes. All gates pass. Micro-rating shown this session? YES — collision! <strong>Play Store ask DEFERRED to next session's happiness moment.</strong></td></tr>
+        <tr><td>Day 47</td><td>Mock Test #9 (score 71%)</td><td>1</td><td>3</td><td>2 days</td><td>Happiness moment (71% >= 60%). Gates re-checked — all pass. No micro-rating this session. <strong>No collision. Play Store ask shown: "Enjoying NPrep?"</strong> Priya taps "Rate on Play Store." Google Play API triggered. <strong>ENTIRE SYSTEM RETIRED.</strong></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="note green"><strong>Result:</strong> 8 micro-ratings over 47 days (~1 per week). One Play Store review. System retired. Priya never felt harassed.</div>
+
+  <!-- Example 2 -->
+  <h3>Example 2: Rahul — Negative Response + Backoff</h3>
+  <div class="note blue">Covers: Negative rating, N doubles to 6, recovery back to 3</div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Day</th><th>What Rahul Does</th><th>Counter</th><th>N</th><th>Gap</th><th>What Happens</th></tr></thead>
+      <tbody>
+        <tr><td>Day 1</td><td>Mock Test (score 45%)</td><td>1</td><td>3</td><td>N/A</td><td>Counter = 1.</td></tr>
+        <tr><td>Day 2</td><td>Video lecture</td><td>2</td><td>3</td><td>N/A</td><td>Counter = 2.</td></tr>
+        <tr><td>Day 3</td><td>Q-Bank (20 Qs, 40% accuracy)</td><td>3</td><td>3</td><td>N/A</td><td><strong>PROMPT SHOWN.</strong> "Were these questions good practice?" Rahul taps <strong>"Not really"</strong> (negative). Follow-up shown — he selects "Questions not relevant to exam." Counter resets to 0. <strong>N becomes 6 for next cycle.</strong></td></tr>
+        <tr><td>Day 4</td><td>Video</td><td>1</td><td><strong>6</strong></td><td>1 day</td><td>Counter = 1. N is now 6. Needs 6 eligible activities.</td></tr>
+        <tr><td>Day 5</td><td>Mock Test</td><td>2</td><td>6</td><td>2 days</td><td>Counter = 2.</td></tr>
+        <tr><td>Day 6</td><td>Q-Bank (22 Qs)</td><td>3</td><td>6</td><td>3 days</td><td>Counter = 3. Still less than N=6.</td></tr>
+        <tr><td>Day 7</td><td>Video</td><td>4</td><td>6</td><td>4 days</td><td>Counter = 4. Not at N.</td></tr>
+        <tr><td>Day 8</td><td>Mock Test</td><td>5</td><td>6</td><td>5 days</td><td>Counter = 5. Gap = 5 days. But counter not at N yet.</td></tr>
+        <tr><td>Day 9</td><td>Q-Bank (20 Qs)</td><td>6</td><td>6</td><td>6 days</td><td><strong>Counter = 6 = N. Gap = 6 days >= 5. PROMPT SHOWN.</strong> "Were these questions good practice?" Rahul taps "Yes, very helpful" (positive). Counter resets to 0. <strong>N returns to 3.</strong></td></tr>
+        <tr><td>Day 10+</td><td>Normal activity</td><td>1, 2, 3...</td><td><strong>3</strong></td><td>counting...</td><td>Back to normal N=3 rhythm.</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="note amber"><strong>Result:</strong> One negative response added 3 extra activities of buffer (6 instead of 3). The student got space. When they had a positive experience, the system recovered automatically. Temporary backoff, not permanent punishment.</div>
+
+  <!-- Example 3 -->
+  <h3>Example 3: Sneha — 3-Day Inactivity Reset</h3>
+  <div class="note blue">Covers: 3+ day inactivity, counter reset, gap clears naturally</div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Day</th><th>What Sneha Does</th><th>Counter</th><th>N</th><th>Gap</th><th>What Happens</th></tr></thead>
+      <tbody>
+        <tr><td>Day 1</td><td>Mock Test + Video + Q-Bank</td><td>3</td><td>3</td><td>N/A</td><td><strong>PROMPT SHOWN</strong> after Q-Bank. Taps "Loved it." Counter = 0. Gap starts.</td></tr>
+        <tr><td>Day 2</td><td>Video</td><td>1</td><td>3</td><td>1 day</td><td>Counter = 1.</td></tr>
+        <tr><td>Day 3</td><td>Mock Test</td><td>2</td><td>3</td><td>2 days</td><td>Counter = 2.</td></tr>
+        <tr><td>Day 4-6</td><td colspan="5" style="color:#dc2626;font-weight:600;text-align:center">Sneha doesn't open the app for 3 days (busy with hospital posting)</td></tr>
+        <tr><td>Day 7</td><td>Opens app, does a video</td><td><strong>0 → 1</strong></td><td>3</td><td>6 days</td><td><strong>3+ days inactive → counter resets from 2 to 0.</strong> Activity increments to 1. Gap = 6 days (already > 5, cleared naturally).</td></tr>
+        <tr><td>Day 7</td><td>Q-Bank (20 Qs)</td><td>2</td><td>3</td><td>6 days</td><td>Counter = 2. Gap clear but counter not at N.</td></tr>
+        <tr><td>Day 8</td><td>Mock Test (score 58%)</td><td>3</td><td>3</td><td>7 days</td><td><strong>Counter = 3. Gap = 7 days >= 5. PROMPT SHOWN.</strong></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="note green"><strong>Result:</strong> Sneha's counter was at 2 before her break. On return, it reset to 0 — giving her 3 activities of grace before the next prompt. The 5-day gap had already cleared during her absence (6 days > 5). No special gap handling needed.</div>
+
+  <!-- Example 4 -->
+  <h3>Example 4: Amit — Session Cap Deferral</h3>
+  <div class="note blue">Covers: Session cap (max 1 per session), deferral to next session</div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Time</th><th>What Amit Does</th><th>Counter</th><th>Session Prompt Used?</th><th>What Happens</th></tr></thead>
+      <tbody>
+        <tr><td>7:00 PM</td><td>Opens app (Session A starts)</td><td>0</td><td>No</td><td>—</td></tr>
+        <tr><td>7:15 PM</td><td>Mock Test</td><td>1</td><td>No</td><td>Counter = 1.</td></tr>
+        <tr><td>7:45 PM</td><td>Video</td><td>2</td><td>No</td><td>Counter = 2.</td></tr>
+        <tr><td>8:15 PM</td><td>Q-Bank (25 Qs)</td><td>3</td><td>No</td><td><strong>PROMPT SHOWN.</strong> Gap clear. Taps "Yes, got it." Counter resets. <strong>Session cap now used.</strong></td></tr>
+        <tr><td>8:30 PM</td><td>Another video</td><td>1</td><td>Yes</td><td>Counter = 1.</td></tr>
+        <tr><td>8:50 PM</td><td>Mock Test</td><td>2</td><td>Yes</td><td>Counter = 2.</td></tr>
+        <tr><td>9:10 PM</td><td>Q-Bank (20 Qs)</td><td>3</td><td>Yes</td><td>Counter = 3 = N. BUT <strong>session cap already used. Counter stays at 3. DEFERRED.</strong></td></tr>
+        <tr><td>9:30 PM</td><td>Another video</td><td>3 (unchanged)</td><td>Yes</td><td>Still deferred. Counter stays at 3.</td></tr>
+        <tr><td>10:00 PM</td><td>Closes app</td><td>3</td><td>—</td><td>Session A ends.</td></tr>
+        <tr><td colspan="5" style="text-align:center;color:#64748B;font-style:italic">Next day (Session B)</td></tr>
+        <tr><td>Next day 7:00 PM</td><td>Opens app (Session B starts)</td><td>3</td><td>No (new session)</td><td>Counter is still at 3 from yesterday.</td></tr>
+        <tr><td>Next day 7:10 PM</td><td>Video lecture</td><td>3 (already at N)</td><td>No</td><td><strong>Counter already at N. Session cap clear. Gap = 1 day (NOT >= 5). Still waiting for gap.</strong></td></tr>
+        <tr><td colspan="5" style="text-align:center;color:#64748B;font-style:italic">...gap clears on Day 5 after original prompt...</td></tr>
+        <tr><td>Day 6</td><td>Any activity</td><td>3</td><td>No</td><td>5 days</td><td><strong>Counter at N. Gap clear. Session cap clear. PROMPT SHOWN.</strong></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="note amber"><strong>Result:</strong> Amit did 7 activities in one evening session but only saw 1 prompt. The deferred prompt waited for both the session boundary AND the 5-day gap to clear.</div>
+
+  <!-- Example 5 -->
+  <h3>Example 5: Kavya — Free User End-to-End Journey</h3>
+  <div class="note blue">Covers: Free user with limited content, reaching Play Store ask, system retirement</div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Day</th><th>What Kavya Does</th><th>Counter</th><th>Gap</th><th>Lifetime Ratings</th><th>What Happens</th></tr></thead>
+      <tbody>
+        <tr><td>Day 1</td><td>Sample Test #1 (score 55%)</td><td>1</td><td>N/A</td><td>0</td><td>Counter = 1.</td></tr>
+        <tr><td>Day 2</td><td>Free Video #1</td><td>2</td><td>N/A</td><td>0</td><td>Counter = 2.</td></tr>
+        <tr><td>Day 3</td><td>Free Video #2</td><td>3</td><td>N/A</td><td>0</td><td><strong>PROMPT SHOWN.</strong> "Did this lecture clear your concept?" Taps "Yes, got it." Counter = 0. Gap starts. <strong>Lifetime = 1.</strong></td></tr>
+        <tr><td>Day 4</td><td>Q-Bank (20 Qs, limited topics)</td><td>1</td><td>1 day</td><td>1</td><td>Counter = 1.</td></tr>
+        <tr><td>Day 5</td><td>Sample Test #2 (score 62%)</td><td>2</td><td>2 days</td><td>1</td><td>Counter = 2. <strong>Tier 2 check: Last rating positive? Yes. 7+ days? No (only day 5). NOT eligible for Play Store ask yet.</strong></td></tr>
+        <tr><td>Day 6</td><td>Free Video #3</td><td>3</td><td>3 days</td><td>1</td><td>Counter = N. Gap = 3 days (need 5). <strong>Waits.</strong></td></tr>
+        <tr><td>Day 7</td><td>Q-Bank (22 Qs)</td><td>3</td><td>4 days</td><td>1</td><td>Still waiting for gap.</td></tr>
+        <tr><td>Day 8</td><td>Free Video #4</td><td>3</td><td>5 days</td><td>1</td><td><strong>Counter = 3. Gap = 5 days. PROMPT SHOWN.</strong> "Did this lecture clear your concept?" Taps "Yes, got it." Counter = 0. <strong>Lifetime = 2.</strong></td></tr>
+        <tr><td colspan="6" style="text-align:center;color:#64748B;font-style:italic">...pattern continues. Kavya does ~1 activity/day with limited free content...</td></tr>
+        <tr><td>Day 10</td><td>Sample Test #3 (score 64%)</td><td>2</td><td>2 days</td><td>2</td><td><strong>Tier 2 check: Last rating positive? Yes. 7+ days since install? Yes. 5+ sessions? Yes. At least 1 micro-rating? Yes. No support ticket? Yes. All gates pass!</strong> Happiness moment (64% >= 60%). No micro-rating this session. <strong>No collision. Play Store ask shown: "Enjoying NPrep?"</strong> Kavya taps "Rate on Play Store." <strong>SYSTEM RETIRED.</strong></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="note green"><strong>Result:</strong> Free user reached Play Store ask in 10 days with only 2 micro-ratings. The system worked despite limited content. Kavya was never blocked by high thresholds.</div>
+
+  <!-- Example 6 -->
+  <h3>Example 6: Vikram — Collision + Deferred Play Store Ask</h3>
+  <div class="note blue">Covers: Micro-rating and Play Store eligibility in same session, deferral to next session's happiness moment</div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Day</th><th>What Vikram Does</th><th>What Happens</th></tr></thead>
+      <tbody>
+        <tr><td>Day 30</td><td>Session starts. All Tier 2 gates already passing (5+ ratings given, all positive, 7+ days, 5+ sessions).</td><td>Vikram is Play Store eligible. Waiting for happiness moment.</td></tr>
+        <tr><td>Day 30</td><td>Watches video (counter was at 2, now 3). Gap = 6 days.</td><td><strong>Micro-rating PROMPT SHOWN.</strong> "Did this lecture clear your concept?" Taps "Yes, got it." Counter resets. Session cap used.</td></tr>
+        <tr><td>Day 30</td><td>Takes Mock Test, scores 68% (happiness moment!)</td><td><strong>COLLISION DETECTED.</strong> Micro-rating was already shown this session. Play Store ask is <strong>DEFERRED.</strong> Set play_store_deferred = true.</td></tr>
+        <tr><td>Day 31</td><td>New session. Watches a video.</td><td>No happiness moment in this session. Play Store ask stays deferred.</td></tr>
+        <tr><td>Day 32</td><td>New session. Q-Bank (20 Qs, 55% accuracy).</td><td>Not a happiness moment (55% accuracy on last 20 Qs, need 70%). Deferred.</td></tr>
+        <tr><td>Day 33</td><td>New session. Mock Test, scores 71%.</td><td><strong>Happiness moment (71% >= 60%). Re-check all 9 gates: last rating still positive? Yes. No micro-rating this session? Correct (no collision). PLAY STORE ASK SHOWN.</strong> Vikram taps "Rate on Play Store." System retired.</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="note amber"><strong>Result:</strong> The collision on Day 30 was handled gracefully. Vikram never saw two popups in one session. The Play Store ask waited for a genuine happiness moment in a clean session (Day 33). 3 days of delay — barely noticeable.</div>
+
+  <!-- Example 7 -->
+  <h3>Example 7: Meera — "Not Now" on Play Store + Lifetime Cap</h3>
+  <div class="note blue">Covers: Play Store "Not now", 90-day cooldown, lifetime cap of 2, system continues</div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Day</th><th>What Meera Does</th><th>What Happens</th></tr></thead>
+      <tbody>
+        <tr><td>Day 12</td><td>Scores 66% on test. All gates pass. No collision.</td><td><strong>Play Store ask shown.</strong> Meera taps <strong>"Not now."</strong> Dismissed. Cooldown = 90 days. Lifetime Play Store asks = 1/2.</td></tr>
+        <tr><td>Day 12-101</td><td>Continues using app. Micro-ratings still fire every ~5 days.</td><td>Micro-ratings continue normally. No Play Store ask (90-day cooldown active).</td></tr>
+        <tr><td>Day 102</td><td>Scores 70% on test. 90-day cooldown cleared. All gates pass.</td><td><strong>Play Store ask shown again (attempt 2/2).</strong> Meera taps <strong>"Not now"</strong> again. Lifetime Play Store asks = 2/2. <strong>Play Store ask permanently retired.</strong></td></tr>
+        <tr><td>Day 103+</td><td>Continues using app.</td><td>Micro-ratings continue until lifetime cap of 15. Play Store ask never shown again.</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="note amber"><strong>Result:</strong> Meera declined twice. System respects her boundary — never asks again. Micro-ratings continue for product data until 15. She contributed feedback but chose not to review publicly. That's fine.</div>
+
+  <!-- Example 8 -->
+  <h3>Example 8: Arjun — Lifetime Cap Reached</h3>
+  <div class="note blue">Covers: 15 ratings → retirement, acknowledgment message</div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Month</th><th>Ratings This Month</th><th>Cumulative</th><th>What Happens</th></tr></thead>
+      <tbody>
+        <tr><td>Month 1</td><td>~5</td><td>5</td><td>Normal prompting. ~1 per week (N=3 + 5-day gap).</td></tr>
+        <tr><td>Month 2</td><td>~5</td><td>10</td><td>Same rhythm. Arjun sometimes skips, sometimes rates.</td></tr>
+        <tr><td>Month 3</td><td>~4</td><td>14</td><td>Normal.</td></tr>
+        <tr><td>Month 4</td><td>1 (rating #15)</td><td><strong>15</strong></td><td><strong>LIFETIME CAP REACHED.</strong> Rating stored. System sets micro_rating_retired = true. Acknowledgment message shown: "Thanks for helping us improve NPrep! Your feedback helped us fix content across multiple topics. You won't see rating prompts anymore."</td></tr>
+        <tr><td>Month 4+</td><td>0</td><td>15</td><td>No more micro-ratings ever. Play Store ask can still fire if Arjun hasn't reviewed yet and meets eligibility.</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="note green"><strong>Result:</strong> 15 ratings over ~3.5 months. ~1 per week. Graceful exit with acknowledgment. Arjun never felt overwhelmed.</div>
+
+  <!-- Example 9 -->
+  <h3>Example 9: Divya — Video "Not at Natural Pause Point"</h3>
+  <div class="note blue">Covers: Video 85% watched but student exits mid-flow, prompt skipped but counter incremented</div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Action</th><th>Counter</th><th>Prompt?</th><th>Why</th></tr></thead>
+      <tbody>
+        <tr><td>Divya watches Anatomy video to 88%, taps Back</td><td>3 (was at 2, incremented because 88% > 80%)</td><td><strong>NO</strong></td><td>Activity IS completed (88% > 80%). Counter IS incremented. But prompt is NOT shown because tapping Back is not a natural pause point. Divya is navigating away — showing a popup on the video list screen feels out of context.</td></tr>
+        <tr><td>Divya opens a Mock Test, completes it</td><td>3 (unchanged — already at N, waiting)</td><td><strong>YES</strong> (if gap clear)</td><td>Counter was already at 3 from the video. This test completion is a natural pause point (results screen). Prompt fires now.</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="note amber"><strong>Key point:</strong> "Completed" and "prompt-worthy" are different. The video completion incremented the counter, but the prompt waited for the next natural pause point. No prompt was lost — just delayed to a better moment.</div>
+
+  <!-- Example 10 -->
+  <h3>Example 10: Ravi — "Found a Wrong Answer" in Q-Bank</h3>
+  <div class="note blue">Covers: Negative follow-up with critical "wrong answer" flag, auto-ticket creation</div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Step</th><th>What Happens</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td>Ravi completes a Q-Bank session (25 questions, Pharmacology). Counter = 3. Gap clear. <strong>PROMPT SHOWN:</strong> "Were these questions good practice?"</td></tr>
+        <tr><td>2</td><td>Ravi taps <strong>"Not really"</strong> (negative response).</td></tr>
+        <tr><td>3</td><td>Follow-up appears: "What was the issue? (pick any)"</td></tr>
+        <tr><td>4</td><td>Ravi selects <strong>"Found a wrong answer"</strong> and "Explanations missing or unclear." Taps Submit.</td></tr>
+        <tr><td>5</td><td>System stores: rating (negative, score 1.5), follow-up selections. <strong>Auto-creates a HIGH PRIORITY content review ticket</strong> with: session ID, topic (Pharmacology), question IDs from this session, user report.</td></tr>
+        <tr><td>6</td><td>Content team receives alert. Reviews flagged questions within 24 hours.</td></tr>
+        <tr><td>7</td><td>Counter resets to 0. <strong>N becomes 6</strong> for next cycle (negative backoff). Ravi gets extra space.</td></tr>
+        <tr><td>8</td><td>After 6 more eligible activities + 5-day gap, Ravi gets his next prompt. If he rates positively, N returns to 3.</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="note red"><strong>"Found a wrong answer" is the most critical flag in the system.</strong> One wrong answer in the Q-Bank destroys student trust. This auto-ticket ensures the content team catches and fixes it before more students are affected.</div>
+
+</section>
+
+<!-- ═══════════════════════════════════════ -->
+<!-- SECTION 8: FLOW DIAGRAMS               -->
 <!-- ═══════════════════════════════════════ -->
 <section id="mermaid">
-  <span class="section-num">Section 7</span>
+  <span class="section-num">Section 8</span>
   <h2>Flow Diagrams</h2>
   <p style="margin-bottom:24px;color:#64748B;font-size:14px">Visual flows rendered below. Expand "Copy for Whimsical" to get the raw Mermaid code.</p>
 

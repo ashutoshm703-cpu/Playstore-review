@@ -320,34 +320,7 @@ tbody tr:hover{background:#EFF6FF}
   font-size:13px;line-height:1.8;color:#334155;
 }
 </style>
-<script type="module">
-import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
-mermaid.initialize({
-  startOnLoad: true,
-  theme: 'base',
-  themeVariables: {
-    primaryColor: '#dbeafe',
-    primaryTextColor: '#1e293b',
-    primaryBorderColor: '#2563eb',
-    lineColor: '#94a3b8',
-    secondaryColor: '#f1f5f9',
-    tertiaryColor: '#fff',
-    fontSize: '13px',
-    fontFamily: 'system-ui, -apple-system, sans-serif'
-  },
-  flowchart: {
-    htmlLabels: true,
-    curve: 'basis',
-    padding: 12,
-    nodeSpacing: 30,
-    rankSpacing: 40
-  }
-});
-</script>
 <style>
-.mermaid-diagram{background:#fff;border-radius:12px;padding:24px;margin:16px 0;box-shadow:0 2px 12px rgba(26,39,68,.07);overflow-x:auto}
-.mermaid-diagram .mermaid{display:flex;justify-content:center}
-.mermaid-diagram svg{max-width:100%;height:auto}
 details.whimsical-code{margin:8px 0 24px;border:1px solid #e2e8f0;border-radius:8px;overflow:hidden}
 details.whimsical-code summary{padding:10px 16px;font-size:13px;font-weight:500;color:#64748b;cursor:pointer;background:#f8fafc;user-select:none}
 details.whimsical-code summary:hover{color:#2563eb;background:#eff6ff}
@@ -1020,223 +993,126 @@ Activity 3 → counter = 3 → CHECK: 5 days since last prompt?
 <section id="mermaid">
   <span class="section-num">Section 7</span>
   <h2>Flow Diagrams</h2>
-  <p style="margin-bottom:24px;color:#64748B;font-size:14px">Visual flows rendered below. Expand "Copy for Whimsical" to get the raw Mermaid code.</p>
+  <p style="margin-bottom:24px;color:#64748B;font-size:14px">Each diagram opens in Mermaid.live with built-in zoom, pan, and full-screen. Left-to-right layout for easier reading. Copy code for Whimsical below each link.</p>
 
   <!-- Flow 1 -->
   <h3>Flow 1: Complete System Flow (Tier 1 + Tier 2)</h3>
-  <div class="mermaid-diagram">
-    <pre class="mermaid">flowchart TD
-    A[Student Completes Activity] --> B{Activity Completed?}
-    B -->|"Test: Submitted + 25% Qs\nattempted + 40% duration"| C{Eligible?}
-    B -->|"Video: 80% actually\nplayed, not seeked"| C
-    B -->|"Q-Bank: 20+ questions\nanswered in session"| C
-    B -->|No - thresholds not met| Z[Skip Silently]
-    C -->|"Not already rated\n+ no crash"| D[Increment Counter]
-    C -->|Already rated or crash| Z
-    D --> E{Counter >= N?\nN=3 normal, N=6 after negative}
-    E -->|No| Z
-    E -->|Yes| F{Session Cap Clear?}
-    F -->|No| G[Defer:\nCounter stays at N]
-    F -->|Yes| H{5+ Days Since\nLast Prompt?}
-    H -->|No| G2[Counter stays at N\nWaits for gap to clear]
-    H -->|Yes| I[Show Micro-Rating Popup]
-    I --> J{Student Response}
-    J -->|Positive| K[Store + Reset Counter\nN stays 3]
-    J -->|Neutral| K
-    J -->|Negative| L[Store + Reset Counter\nN becomes 6 next cycle]
-    J -->|Skip| M[Log + Reset Counter\nN stays 3]
-    K --> N[Update Sentiment Data]
-    L --> N
-    M --> N
-    N --> O{Tier 2:\nAll 9 Gates Pass?}
-    O -->|No| Z
-    O -->|Yes| P{Happiness Moment?}
-    P -->|No| Q[Stay Eligible\nWait for Moment]
-    P -->|Yes| R{Micro-Rating Shown\nThis Session?}
-    R -->|No Collision| S[Show Play Store Ask]
-    R -->|Collision| R2[Defer to\nFuture Session]
-    R2 --> R3[Wait for Next Session]
-    R3 --> R4{Happiness Moment\nin New Session?}
-    R4 -->|No| R3
-    R4 -->|Yes| R5{Re-check All\n9 Gates Fresh}
-    R5 -->|Fail| R6[Cancel\nMust Re-qualify]
-    R5 -->|Pass + No Collision| S
-    R5 -->|Pass + Collision| R2
-    S --> S2{Student Response}
-    S2 -->|Rate on Play Store| T[Trigger Google Play API\n+ Retire System]
-    S2 -->|Not now| U[Dismiss\n+ 90 day cooldown]
-
-    style A fill:#dbeafe,stroke:#2563eb,color:#1e293b
-    style I fill:#bbf7d0,stroke:#16a34a,color:#1e293b
-    style S fill:#bbf7d0,stroke:#16a34a,color:#1e293b
-    style T fill:#86efac,stroke:#16a34a,color:#1e293b
-    style Z fill:#fecaca,stroke:#dc2626,color:#1e293b
-    style R6 fill:#fecaca,stroke:#dc2626,color:#1e293b
-    style G fill:#fef3c7,stroke:#d97706,color:#1e293b
-    style R2 fill:#fef3c7,stroke:#d97706,color:#1e293b
-    style L fill:#fed7aa,stroke:#ea580c,color:#1e293b</pre>
+  <div style="margin-bottom:12px">
+    <a href="https://mermaid.live/edit#base64:eyJjb2RlIjoiZmxvd2NoYXJ0IExSXG4gICAgQVtTdHVkZW50IENvbXBsZXRlcyBBY3Rpdml0eV0gLS0+IEJ7QWN0aXZpdHkgQ29tcGxldGVkP31cbiAgICBCIC0tPnxUZXN0OiAyNSUgUXMgKyA0MCUgZHVyYXRpb258IEN7RWxpZ2libGU/IE5vdCBhbHJlYWR5IHJhdGVkICsgbm8gY3Jhc2h9XG4gICAgQiAtLT58VmlkZW86IDgwJSBhY3R1YWxseSBwbGF5ZWR8IENcbiAgICBCIC0tPnxRLUJhbms6IDIwKyBxdWVzdGlvbnN8IENcbiAgICBCIC0tPnxUaHJlc2hvbGRzIG5vdCBtZXR8IFpbU2tpcCBTaWxlbnRseV1cbiAgICBDIC0tPnxFbGlnaWJsZXwgRFtJbmNyZW1lbnQgQ291bnRlcl1cbiAgICBDIC0tPnxOb3QgZWxpZ2libGV8IFpcbiAgICBEIC0tPiBFe0NvdW50ZXIgPj0gTj8gTj0zIG9yIE49Nn1cbiAgICBFIC0tPnxOb3wgWlxuICAgIEUgLS0+fFllc3wgRntTZXNzaW9uIENhcCBDbGVhcj99XG4gICAgRiAtLT58Tm98IEdbRGVmZXI6IENvdW50ZXIgc3RheXMgYXQgTl1cbiAgICBGIC0tPnxZZXN8IEh7NSsgRGF5cyBTaW5jZSBMYXN0IFByb21wdD99XG4gICAgSCAtLT58Tm98IEcyW1dhaXRzIGZvciBnYXAgdG8gY2xlYXJdXG4gICAgSCAtLT58WWVzfCBJW1Nob3cgTWljcm8tUmF0aW5nIFBvcHVwXVxuICAgIEkgLS0+IEp7U3R1ZGVudCBSZXNwb25zZX1cbiAgICBKIC0tPnxQb3NpdGl2ZXwgS1tSZXNldCBDb3VudGVyLCBOIHN0YXlzIDNdXG4gICAgSiAtLT58TmV1dHJhbHwgS1xuICAgIEogLS0+fE5lZ2F0aXZlfCBMW1Jlc2V0IENvdW50ZXIsIE4gYmVjb21lcyA2XVxuICAgIEogLS0+fFNraXB8IE1bUmVzZXQgQ291bnRlciwgTiBzdGF5cyAzXVxuICAgIEsgLS0+IE4yW1VwZGF0ZSBTZW50aW1lbnRdXG4gICAgTCAtLT4gTjJcbiAgICBNIC0tPiBOMlxuICAgIE4yIC0tPiBPe1RpZXIgMjogQWxsIDkgR2F0ZXMgUGFzcz99XG4gICAgTyAtLT58Tm98IFpcbiAgICBPIC0tPnxZZXN8IFB7SGFwcGluZXNzIE1vbWVudD99XG4gICAgUCAtLT58Tm98IFFbV2FpdCBmb3IgTW9tZW50XVxuICAgIFAgLS0+fFllc3wgUntNaWNyby1SYXRpbmcgVGhpcyBTZXNzaW9uP31cbiAgICBSIC0tPnxObyBDb2xsaXNpb258IFNbU2hvdyBQbGF5IFN0b3JlIEFza11cbiAgICBSIC0tPnxDb2xsaXNpb258IFIyW0RlZmVyIHRvIEZ1dHVyZSBTZXNzaW9uXVxuICAgIFIyIC0tPiBSM3tOZXh0IFNlc3Npb24gSGFwcGluZXNzIE1vbWVudD99XG4gICAgUjMgLS0+fE5vfCBSNFtLZWVwIFdhaXRpbmddXG4gICAgUjMgLS0+fFllc3wgUjV7UmUtY2hlY2sgR2F0ZXN9XG4gICAgUjUgLS0+fEZhaWx8IFI2W0NhbmNlbF1cbiAgICBSNSAtLT58UGFzc3wgU1xuICAgIFMgLS0+IFMye1Jlc3BvbnNlfVxuICAgIFMyIC0tPnxSYXRlIG9uIFBsYXkgU3RvcmV8IFRbR29vZ2xlIFBsYXkgQVBJICsgUmV0aXJlXVxuICAgIFMyIC0tPnxOb3Qgbm93fCBVWzkwIGRheSBjb29sZG93bl0ifQ==" target="_blank" style="display:inline-flex;align-items:center;gap:8px;padding:12px 24px;border-radius:12px;background:#2563EB;color:#fff;text-decoration:none;font-size:14px;font-weight:600;transition:.2s ease">
+      Open in Mermaid.live (zoom, pan, full-screen) &rarr;
+    </a>
   </div>
   <details class="whimsical-code">
     <summary>Copy for Whimsical</summary>
     <div class="code-block">
       <button class="copy-btn" onclick="copyCode(this)">Copy</button>
-      <pre>flowchart TD
+      <pre>flowchart LR
     A[Student Completes Activity] --> B{Activity Completed?}
     B -->|Test: 25% Qs + 40% duration| C{Eligible? Not already rated + no crash}
     B -->|Video: 80% actually played| C
     B -->|Q-Bank: 20+ questions| C
-    B -->|No - thresholds not met| Z[Skip Silently]
+    B -->|Thresholds not met| Z[Skip Silently]
     C -->|Eligible| D[Increment Counter]
     C -->|Not eligible| Z
-    D --> E{Counter >= N? N=3 or N=6 after negative}
+    D --> E{Counter >= N? N=3 or N=6}
     E -->|No| Z
     E -->|Yes| F{Session Cap Clear?}
     F -->|No| G[Defer: Counter stays at N]
     F -->|Yes| H{5+ Days Since Last Prompt?}
-    H -->|No| G2[Counter stays at N, waits for gap]
+    H -->|No| G2[Waits for gap to clear]
     H -->|Yes| I[Show Micro-Rating Popup]
     I --> J{Student Response}
-    J -->|Positive| K[Store + Reset Counter, N stays 3]
+    J -->|Positive| K[Reset Counter, N stays 3]
     J -->|Neutral| K
-    J -->|Negative| L[Store + Reset Counter, N becomes 6 next cycle]
-    J -->|Skip| M[Log + Reset Counter, N stays 3]
-    K --> N[Update Sentiment Data]
-    L --> N
-    M --> N
-    N --> O{Tier 2 Check: All 9 Gates Pass?}
+    J -->|Negative| L[Reset Counter, N becomes 6]
+    J -->|Skip| M[Reset Counter, N stays 3]
+    K --> N2[Update Sentiment]
+    L --> N2
+    M --> N2
+    N2 --> O{Tier 2: All 9 Gates Pass?}
     O -->|No| Z
     O -->|Yes| P{Happiness Moment?}
-    P -->|No| Q[Stay Eligible - Wait for Moment]
-    P -->|Yes| R{Micro-Rating Shown This Session?}
-    R -->|No - No Collision| S[Show Play Store Ask Immediately]
-    R -->|Yes - Collision| R2[Defer to Future Session]
-    R2 --> R3[Wait for Next Session]
-    R3 --> R4{Happiness Moment in New Session?}
-    R4 -->|No| R3
-    R4 -->|Yes| R5{Re-check All 9 Gates Fresh}
-    R5 -->|Fail| R6[Cancel. Must Re-qualify.]
-    R5 -->|Pass + No Collision| S
-    R5 -->|Pass + Another Collision| R2
-    S --> S2{Student Response}
-    S2 -->|Rate on Play Store| T[Trigger Google Play API + Retire System]
-    S2 -->|Not now| U[Dismiss + 90 day cooldown]</pre>
+    P -->|No| Q[Wait for Moment]
+    P -->|Yes| R{Micro-Rating This Session?}
+    R -->|No Collision| S[Show Play Store Ask]
+    R -->|Collision| R2[Defer to Future Session]
+    R2 --> R3{Next Session Happiness Moment?}
+    R3 -->|No| R4[Keep Waiting]
+    R3 -->|Yes| R5{Re-check Gates}
+    R5 -->|Fail| R6[Cancel]
+    R5 -->|Pass| S
+    S --> S2{Response}
+    S2 -->|Rate on Play Store| T[Google Play API + Retire]
+    S2 -->|Not now| U[90 day cooldown]</pre>
     </div>
   </details>
 
   <!-- Flow 2 -->
   <h3>Flow 2: Counter + Gap Logic</h3>
-  <div class="mermaid-diagram">
-    <pre class="mermaid">flowchart TD
-    A[Eligible Activity Completed] --> B[Increment Counter]
-    B --> C{Counter >= N?\nN=3 normal, N=6 after negative}
-    C -->|No| D[Wait for\nNext Activity]
-    C -->|Yes| E{5+ Days Since\nLast Prompt?}
-    E -->|No| F[Counter Stays at N\nWaits for Gap]
-    E -->|Yes| G{Session Cap Clear?}
-    G -->|No| H[Defer to\nNext Session]
-    G -->|Yes| I[Show Prompt]
-    I --> J{Response?}
-    J -->|Positive or Neutral| K[N = 3\nCounter = 0\nGap Timer Resets]
-    J -->|Negative| L[N = 6 next cycle\nCounter = 0\nGap Timer Resets]
-    J -->|Skip| M[N stays 3\nCounter = 0\nGap Timer Resets]
-    K --> N{Lifetime >= 15?}
-    L --> N
-    M --> N
-    N -->|Yes| O[Retire Permanently]
-    N -->|No| D
-
-    style A fill:#dbeafe,stroke:#2563eb,color:#1e293b
-    style I fill:#bbf7d0,stroke:#16a34a,color:#1e293b
-    style O fill:#fecaca,stroke:#dc2626,color:#1e293b
-    style F fill:#fef3c7,stroke:#d97706,color:#1e293b
-    style H fill:#fef3c7,stroke:#d97706,color:#1e293b
-    style L fill:#fed7aa,stroke:#ea580c,color:#1e293b</pre>
+  <div style="margin-bottom:12px">
+    <a href="https://mermaid.live/edit#base64:eyJjb2RlIjoiZmxvd2NoYXJ0IExSXG4gICAgQVtFbGlnaWJsZSBBY3Rpdml0eSBDb21wbGV0ZWRdIC0tPiBCW0luY3JlbWVudCBDb3VudGVyXVxuICAgIEIgLS0+IEN7Q291bnRlciA+PSBOPyBOPTMgbm9ybWFsIE49NiBhZnRlciBuZWdhdGl2ZX1cbiAgICBDIC0tPnxOb3wgRFtXYWl0XVxuICAgIEMgLS0+fFllc3wgRXs1KyBEYXlzIEdhcD99XG4gICAgRSAtLT58Tm98IEZbQ291bnRlciBzdGF5cywgd2FpdHNdXG4gICAgRSAtLT58WWVzfCBHe1Nlc3Npb24gQ2FwP31cbiAgICBHIC0tPnxVc2VkfCBIW0RlZmVyIHRvIG5leHQgc2Vzc2lvbl1cbiAgICBHIC0tPnxDbGVhcnwgSVtTaG93IFByb21wdF1cbiAgICBJIC0tPiBKe1Jlc3BvbnNlP31cbiAgICBKIC0tPnxQb3NpdGl2ZS9OZXV0cmFsfCBLW049MywgQ291bnRlcj0wLCBHYXAgcmVzZXRzXVxuICAgIEogLS0+fE5lZ2F0aXZlfCBMW049NiBuZXh0IGN5Y2xlLCBDb3VudGVyPTAsIEdhcCByZXNldHNdXG4gICAgSiAtLT58U2tpcHwgTTJbTj0zLCBDb3VudGVyPTAsIEdhcCByZXNldHNdXG4gICAgSyAtLT4gTjN7TGlmZXRpbWUgPj0gMTU/fVxuICAgIEwgLS0+IE4zXG4gICAgTTIgLS0+IE4zXG4gICAgTjMgLS0+fFllc3wgT1tSZXRpcmUgUGVybWFuZW50bHldXG4gICAgTjMgLS0+fE5vfCBEIn0=" target="_blank" style="display:inline-flex;align-items:center;gap:8px;padding:12px 24px;border-radius:12px;background:#2563EB;color:#fff;text-decoration:none;font-size:14px;font-weight:600;transition:.2s ease">
+      Open in Mermaid.live &rarr;
+    </a>
   </div>
   <details class="whimsical-code">
     <summary>Copy for Whimsical</summary>
     <div class="code-block">
       <button class="copy-btn" onclick="copyCode(this)">Copy</button>
-      <pre>flowchart TD
+      <pre>flowchart LR
     A[Eligible Activity Completed] --> B[Increment Counter]
-    B --> C{Counter >= N? N=3 normal, N=6 after negative}
-    C -->|No| D[Wait for Next Activity]
-    C -->|Yes| E{5+ Days Since Last Prompt?}
-    E -->|No| F[Counter Stays at N - Waits for Gap]
-    E -->|Yes| G{Session Cap Clear?}
-    G -->|No| H[Defer to Next Session]
-    G -->|Yes| I[Show Prompt]
+    B --> C{Counter >= N? N=3 normal N=6 after negative}
+    C -->|No| D[Wait]
+    C -->|Yes| E{5+ Days Gap?}
+    E -->|No| F[Counter stays, waits]
+    E -->|Yes| G{Session Cap?}
+    G -->|Used| H[Defer to next session]
+    G -->|Clear| I[Show Prompt]
     I --> J{Response?}
-    J -->|Positive or Neutral| K[N = 3, Counter = 0, Gap Timer Resets]
-    J -->|Negative| L[N = 6 next cycle, Counter = 0, Gap Timer Resets]
-    J -->|Skip| M[N stays 3, Counter = 0, Gap Timer Resets]
-    K --> N{Lifetime >= 15?}
-    L --> N
-    M --> N
-    N -->|Yes| O[Retire Permanently]
-    N -->|No| D</pre>
+    J -->|Positive/Neutral| K[N=3, Counter=0, Gap resets]
+    J -->|Negative| L[N=6 next cycle, Counter=0, Gap resets]
+    J -->|Skip| M2[N=3, Counter=0, Gap resets]
+    K --> N3{Lifetime >= 15?}
+    L --> N3
+    M2 --> N3
+    N3 -->|Yes| O[Retire Permanently]
+    N3 -->|No| D</pre>
     </div>
   </details>
 
   <!-- Flow 3 -->
   <h3>Flow 3: Tier 2 Play Store Eligibility</h3>
-  <div class="mermaid-diagram">
-    <pre class="mermaid">flowchart TD
-    A[Check Play Store\nEligibility] --> B{Days Since\nInstall >= 7?}
-    B -->|No| FAIL[Not Eligible]
-    B -->|Yes| C{Total\nSessions >= 5?}
-    C -->|No| FAIL
-    C -->|Yes| D{At Least 1\nMicro-Rating Given?}
-    D -->|No| FAIL
-    D -->|Yes| E{Last Micro-Rating\nWas Positive?}
-    E -->|No| FAIL
-    E -->|Yes| F{No Active\nSupport Ticket?}
-    F -->|No| FAIL
-    F -->|Yes| G{Play Store Ask Not\nShown in Last 90 Days?}
-    G -->|No| FAIL
-    G -->|Yes| H{Lifetime Play Store\nAsks under 2?}
-    H -->|No| RETIRED[Permanently Done]
-    H -->|Yes| I{play_store_ask_enabled\n= true?}
-    I -->|No| FAIL
-    I -->|Yes| J[ELIGIBLE\nWait for Happiness Moment]
-    J --> K{Happiness Moment?}
-    K -->|Test Score >= 60%| SHOW[Show Play Store Ask]
-    K -->|5th Video at 80%+| SHOW
-    K -->|Q-Bank 70%+ last 20| SHOW
-    K -->|No Moment Yet| WAIT[Keep Monitoring]
-
-    style A fill:#dbeafe,stroke:#2563eb,color:#1e293b
-    style FAIL fill:#fecaca,stroke:#dc2626,color:#1e293b
-    style RETIRED fill:#e2e8f0,stroke:#64748b,color:#1e293b
-    style J fill:#fef3c7,stroke:#d97706,color:#1e293b
-    style SHOW fill:#bbf7d0,stroke:#16a34a,color:#1e293b</pre>
+  <div style="margin-bottom:12px">
+    <a href="https://mermaid.live/edit#base64:eyJjb2RlIjoiZmxvd2NoYXJ0IExSXG4gICAgQVtDaGVjayBFbGlnaWJpbGl0eV0gLS0+IEJ7RGF5cyA+PSA3P31cbiAgICBCIC0tPnxOb3wgRkFJTFtOb3QgRWxpZ2libGVdXG4gICAgQiAtLT58WWVzfCBDe1Nlc3Npb25zID49IDU/fVxuICAgIEMgLS0+fE5vfCBGQUlMXG4gICAgQyAtLT58WWVzfCBEezErIE1pY3JvLVJhdGluZz99XG4gICAgRCAtLT58Tm98IEZBSUxcbiAgICBEIC0tPnxZZXN8IEV7TGFzdCBSYXRpbmcgUG9zaXRpdmU/fVxuICAgIEUgLS0+fE5vfCBGQUlMXG4gICAgRSAtLT58WWVzfCBGe05vIFN1cHBvcnQgVGlja2V0P31cbiAgICBGIC0tPnxOb3wgRkFJTFxuICAgIEYgLS0+fFllc3wgR3tOb3Qgc2hvd24gaW4gOTAgZGF5cz99XG4gICAgRyAtLT58Tm98IEZBSUxcbiAgICBHIC0tPnxZZXN8IEh7TGlmZXRpbWUgYXNrcyB1bmRlciAyP31cbiAgICBIIC0tPnxOb3wgRE9ORVtQZXJtYW5lbnRseSBEb25lXVxuICAgIEggLS0+fFllc3wgSXtFbmFibGVkP31cbiAgICBJIC0tPnxOb3wgRkFJTFxuICAgIEkgLS0+fFllc3wgSltFTElHSUJMRV1cbiAgICBKIC0tPiBLe0hhcHBpbmVzcyBNb21lbnQ/fVxuICAgIEsgLS0+fFRlc3QgPj0gNjAlfCBTSE9XW1BsYXkgU3RvcmUgQXNrXVxuICAgIEsgLS0+fDV0aCBWaWRlbyA4MCUrfCBTSE9XXG4gICAgSyAtLT58US1CYW5rIDcwJSBsYXN0IDIwfCBTSE9XXG4gICAgSyAtLT58Tm98IFdBSVRbS2VlcCBNb25pdG9yaW5nXSJ9" target="_blank" style="display:inline-flex;align-items:center;gap:8px;padding:12px 24px;border-radius:12px;background:#2563EB;color:#fff;text-decoration:none;font-size:14px;font-weight:600;transition:.2s ease">
+      Open in Mermaid.live &rarr;
+    </a>
   </div>
   <details class="whimsical-code">
     <summary>Copy for Whimsical</summary>
     <div class="code-block">
       <button class="copy-btn" onclick="copyCode(this)">Copy</button>
-      <pre>flowchart TD
-    A[Check Play Store Eligibility] --> B{Days Since Install >= 7?}
+      <pre>flowchart LR
+    A[Check Eligibility] --> B{Days >= 7?}
     B -->|No| FAIL[Not Eligible]
-    B -->|Yes| C{Total Sessions >= 5?}
+    B -->|Yes| C{Sessions >= 5?}
     C -->|No| FAIL
-    C -->|Yes| D{At Least 1 Micro-Rating Given?}
+    C -->|Yes| D{1+ Micro-Rating?}
     D -->|No| FAIL
-    D -->|Yes| E{Last Micro-Rating Was Positive?}
+    D -->|Yes| E{Last Rating Positive?}
     E -->|No| FAIL
-    E -->|Yes| F{No Active Support Ticket?}
+    E -->|Yes| F{No Support Ticket?}
     F -->|No| FAIL
-    F -->|Yes| G{Play Store Ask Not Shown in Last 90 Days?}
+    F -->|Yes| G{Not shown in 90 days?}
     G -->|No| FAIL
-    G -->|Yes| H{Lifetime Play Store Asks under 2?}
-    H -->|No| RETIRED[Permanently Done]
-    H -->|Yes| I{play_store_ask_enabled = true?}
+    G -->|Yes| H{Lifetime asks under 2?}
+    H -->|No| DONE[Permanently Done]
+    H -->|Yes| I{Enabled?}
     I -->|No| FAIL
-    I -->|Yes| J[ELIGIBLE - Wait for Happiness Moment]
-    J --> K{Happiness Moment Detected?}
-    K -->|Any Test Score >= 60%| SHOW[Show Play Store Ask]
-    K -->|5th Video Completed at 80%+ watched| SHOW
-    K -->|Q-Bank: 70%+ in last 20 Qs| SHOW
-    K -->|No Moment Yet| WAIT[Keep Monitoring]</pre>
+    I -->|Yes| J[ELIGIBLE]
+    J --> K{Happiness Moment?}
+    K -->|Test >= 60%| SHOW[Play Store Ask]
+    K -->|5th Video 80%+| SHOW
+    K -->|Q-Bank 70% last 20| SHOW
+    K -->|No| WAIT[Keep Monitoring]</pre>
     </div>
   </details>
 </section>

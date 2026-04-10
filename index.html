@@ -507,7 +507,7 @@ N = 6 (after negative response, next cycle only, then back to 3)
 Minimum gap = 5 calendar days since last prompt
 Lifetime cap = 15 ratings
 Session cap = 1 per session
-Inactivity reset = 3+ consecutive days → counter AND gap timer both reset
+Inactivity reset = 3+ consecutive days → counter resets to 0 (gap timer continues as-is)
   </div>
 
   <h4>How the counter works</h4>
@@ -591,7 +591,7 @@ Activity 3 → counter = 3 → CHECK: 5 days since last prompt?
         <tr><td>Student skips the prompt</td><td>Stays at 3 (skip is neutral)</td><td>Resets to 0</td><td>Resets (today = new start)</td></tr>
         <tr><td>Counter hits N but 5-day gap not met</td><td>No change</td><td>Stays at N (waits)</td><td>No change (still counting)</td></tr>
         <tr><td>Session cap defers prompt</td><td>No change</td><td>Stays at N</td><td>No change</td></tr>
-        <tr><td>Student inactive 3+ days, returns</td><td>No change</td><td>Resets to 0 (grace period)</td><td><strong>Also resets</strong> (inactivity served as the gap)</td></tr>
+        <tr><td>Student inactive 3+ days, returns</td><td>No change</td><td>Resets to 0 (grace period)</td><td>No change (continues counting, clears naturally)</td></tr>
       </tbody>
     </table>
   </div>
@@ -1093,7 +1093,7 @@ const edgeCases = [
   { n:10, title:"Counter hits N but 5-day gap not met", what:"Counter stays at N. Waits for gap to clear. Next eligible activity after gap clears triggers the prompt.", why:"Prevents front-loading. Ensures even spacing (~1 prompt per 5 days max)." },
   { n:11, title:"Student skips the prompt", what:"Counter resets to 0. N stays at 3 (skip is neutral). 5-day gap timer resets.", why:"Skip is neutral, not negative. No backoff." },
   { n:12, title:"Negative rating \u2192 backoff", what:"N becomes 6 for the next cycle ONLY. After the next positive/neutral/skip, N returns to 3.", why:"Temporary backoff. One bad experience shouldn't haunt permanently." },
-  { n:13, title:"Student inactive 3+ consecutive days, returns", what:"Counter resets to 0 AND 5-day gap timer resets. N unchanged. Prompt can fire on 3rd activity back — no additional gap wait. The inactivity itself served as the breathing room.", why:"3 days away from a daily-study app is a real break. Forcing 5 more days of gap on top of 3 days of absence double-punishes the returning student." },
+  { n:13, title:"Student inactive 3+ consecutive days, returns", what:"Counter resets to 0. Gap timer continues as-is (usually already cleared by the time they return). N unchanged. Student needs 3 activities before next prompt.", why:"3 days away from a daily-study app is a real break. Counter reset gives them grace. Gap timer clears naturally — no special handling needed." },
   { n:14, title:"Video 85%, student taps Back", what:"COMPLETED for counter. Prompt NOT shown (not at natural pause).", why:"Out-of-context prompt is worse than no prompt." },
   { n:15, title:"Two devices simultaneously", what:"Counter is server-side, atomic increments. First device to hit N gets prompt.", why:"Prevents double-prompting." },
   { n:16, title:"Student clears app cache", what:"No effect. Counter is server-side, tied to user_id.", why:"Server is source of truth." },

@@ -363,7 +363,6 @@ details.whimsical-code[open] summary{border-bottom:1px solid #e2e8f0}
     <a href="#tier1-when">Tier 1: When</a>
     <a href="#tier1-what">Tier 1: Screens</a>
     <a href="#tier2">Tier 2: Play Store</a>
-    <a href="#triggers">Support Triggers</a>
     <a href="#edge-cases">Edge Cases</a>
     <a href="#examples">Examples</a>
     <a href="#mermaid">Flow Diagrams</a>
@@ -796,47 +795,10 @@ Activity 3 → counter = 3 → CHECK: 5 days since last prompt?
 </section>
 
 <!-- ═══════════════════════════════════════ -->
-<!-- SECTION 5: SUPPORT TRIGGERS            -->
-<!-- ═══════════════════════════════════════ -->
-<section id="triggers">
-  <span class="section-num">Section 5</span>
-  <h2>Automatic Support Triggers</h2>
-
-  <div class="table-wrap">
-    <table>
-      <thead><tr><th>Signal</th><th>Action</th><th>Priority</th></tr></thead>
-      <tbody>
-        <tr>
-          <td>Average micro-rating drops below 2.0</td>
-          <td>Auto-create support ticket. Team reaches out: "We noticed you're not having a great experience. How can we help?"</td>
-          <td><span style="color:#D97706;font-weight:600">High</span></td>
-        </tr>
-        <tr>
-          <td>2 consecutive negative ratings</td>
-          <td>Same outreach trigger</td>
-          <td><span style="color:#D97706;font-weight:600">High</span></td>
-        </tr>
-        <tr>
-          <td>"Found a wrong answer" in Q-bank follow-up</td>
-          <td>Auto-create content review ticket with question IDs</td>
-          <td><span style="color:#DC2626;font-weight:700">Critical</span></td>
-        </tr>
-        <tr>
-          <td>3 consecutive skips</td>
-          <td>Flag for review &mdash; student may be disengaged</td>
-          <td><span style="color:#64748B;font-weight:500">Low</span></td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-  <div class="note green">Detractor detection is immediate and proactive — the student doesn't have to fill a survey. The system detects unhappiness from behavioral signals and acts.</div>
-</section>
-
-<!-- ═══════════════════════════════════════ -->
-<!-- SECTION 6: EDGE CASES                  -->
+<!-- SECTION 5: EDGE CASES                  -->
 <!-- ═══════════════════════════════════════ -->
 <section id="edge-cases">
-  <span class="section-num">Section 6</span>
+  <span class="section-num">Section 5</span>
   <h2>Edge Cases</h2>
   <p style="margin-bottom:16px;color:#64748B;font-size:14px">Click each case to expand details.</p>
 
@@ -847,7 +809,7 @@ Activity 3 → counter = 3 → CHECK: 5 days since last prompt?
 <!-- SECTION 7: EXAMPLES                     -->
 <!-- ═══════════════════════════════════════ -->
 <section id="examples">
-  <span class="section-num">Section 7</span>
+  <span class="section-num">Section 6</span>
   <h2>Examples — Real Student Journeys</h2>
   <p style="margin-bottom:24px;color:#64748B;font-size:14px">Each example traces through the exact system logic step by step. Use these to verify implementation.</p>
 
@@ -1056,7 +1018,7 @@ Activity 3 → counter = 3 → CHECK: 5 days since last prompt?
 <!-- SECTION 8: FLOW DIAGRAMS               -->
 <!-- ═══════════════════════════════════════ -->
 <section id="mermaid">
-  <span class="section-num">Section 8</span>
+  <span class="section-num">Section 7</span>
   <h2>Flow Diagrams</h2>
   <p style="margin-bottom:24px;color:#64748B;font-size:14px">Visual flows rendered below. Expand "Copy for Whimsical" to get the raw Mermaid code.</p>
 

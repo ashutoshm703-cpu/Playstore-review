@@ -450,7 +450,7 @@ details.whimsical-code[open] summary{border-bottom:1px solid #e2e8f0}
           <td>Product quality data</td>
           <td>Contextual popup per activity type</td>
           <td>Never</td>
-          <td>Every Nth eligible activity (progressive N)</td>
+          <td>Every 3rd eligible activity, min 5-day gap</td>
         </tr>
         <tr>
           <td><strong>Tier 2: Play Store Ask</strong></td>
@@ -497,50 +497,69 @@ details.whimsical-code[open] summary{border-bottom:1px solid #e2e8f0}
   </div>
   <div class="note blue">Score does NOT affect completion. A student who scores 15% has their activity completed, same as 95%.</div>
 
-  <!-- Progressive N -->
-  <h3>Progressive N &mdash; The Prompting Engine</h3>
-  <p style="margin-bottom:12px">Show a micro-rating popup every Nth eligible activity, max 1 per session. N increases after each rating.</p>
+  <!-- Prompting Engine -->
+  <h3>The Prompting Engine</h3>
+  <p style="margin-bottom:12px"><strong>One sentence:</strong> Every 3rd eligible activity, but never more than once per 5 days.</p>
 
   <div class="formula">
-Starting N = 3
-
-After each rating or skip:
-  N = N + (rating_number + 1)
-  If negative response: N = N + 6  (permanent penalty)
+N = 3 (always)
+N = 6 (after negative response, next cycle only, then back to 3)
+Minimum gap = 5 calendar days since last prompt
+Lifetime cap = 15 ratings
+Session cap = 1 per session
   </div>
 
+  <h4>How the counter works</h4>
+  <div class="formula">
+Activity 1 → counter = 1
+Activity 2 → counter = 2
+Activity 3 → counter = 3 → CHECK: 5 days since last prompt?
+  → YES → PROMPT → counter resets to 0
+  → NO  → counter stays at 3, waits for gap to clear
+  </div>
+
+  <div class="note amber"><strong>The counter resets to 0 after each prompt (whether rated or skipped).</strong> It does not keep incrementing. It always counts to 3 (or 6 after negative), fires, resets.</div>
+
+  <h4>The 5-day gap</h4>
   <div class="table-wrap">
     <table>
-      <thead><tr><th>After Rating #</th><th>N Becomes</th><th>Gap for Active Student (3/day)</th></tr></thead>
+      <thead><tr><th>Rule</th><th>How It Works</th></tr></thead>
       <tbody>
-        <tr><td>1</td><td>5</td><td>~2 days</td></tr>
-        <tr><td>2</td><td>8</td><td>~3 days</td></tr>
-        <tr><td>3</td><td>12</td><td>~4 days</td></tr>
-        <tr><td>4</td><td>17</td><td>~6 days</td></tr>
-        <tr><td>5</td><td>23</td><td>~8 days</td></tr>
-        <tr><td>6</td><td>30</td><td>~10 days</td></tr>
-        <tr><td>7</td><td>38</td><td>~13 days</td></tr>
-        <tr><td>8</td><td>47</td><td>~16 days</td></tr>
-        <tr><td>9</td><td>57</td><td>~19 days</td></tr>
-        <tr><td>10</td><td>68</td><td>~23 days</td></tr>
+        <tr><td>Calculation</td><td><code>today's date - last_prompt_date >= 5</code>. Calendar days, not timestamps. No time-of-day tracking.</td></tr>
+        <tr><td>Example</td><td>Prompt shown on April 10 → next prompt eligible on April 15 or later (any time that day).</td></tr>
+        <tr><td>Why 5 days</td><td>Naturally limits to ~5-6 prompts/month. Evenly spaced. No front-loading.</td></tr>
       </tbody>
     </table>
   </div>
 
-  <!-- Three Safety Layers -->
-  <h3>Three Safety Layers</h3>
+  <h4>What this looks like in practice</h4>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th></th><th>Active Student (3/day)</th><th>Free Student (1/day)</th></tr></thead>
+      <tbody>
+        <tr><td>Prompt 1</td><td>Day 1 (counter hits 3 on day 1)</td><td>Day 3 (counter hits 3)</td></tr>
+        <tr><td>Prompt 2</td><td>Day 6 (counter hit 3 on day 2, waited for 5-day gap)</td><td>Day 8 (counter hits 3, gap clear)</td></tr>
+        <tr><td>Prompt 3</td><td>Day 11</td><td>Day 13</td></tr>
+        <tr><td>Prompt 4</td><td>Day 16</td><td>Day 18</td></tr>
+        <tr><td>Month total</td><td><strong>~5-6 prompts, evenly spaced</strong></td><td><strong>~4 prompts, evenly spaced</strong></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Safety Layers -->
+  <h3>Safety Layers</h3>
   <div class="safety-grid">
     <div class="safety-card">
-      <h4>Progressive N</h4>
-      <p>N increases after every rating. Negative adds +6 permanently. System naturally fades over time.</p>
+      <h4>5-Day Minimum Gap</h4>
+      <p>Counter must reach N AND at least 5 calendar days since last prompt. Prevents front-loading. No monthly cap needed.</p>
     </div>
     <div class="safety-card">
-      <h4>Monthly Cap</h4>
-      <p>Max 6 micro-rating prompts per calendar month. If cap hit, counter stays at N, deferred to next month.</p>
+      <h4>Negative Backoff</h4>
+      <p>After a negative response, N doubles to 6 for the next cycle only. After the next positive/neutral/skip, N returns to 3.</p>
     </div>
     <div class="safety-card">
       <h4>Lifetime Retirement</h4>
-      <p>Micro-ratings stop permanently when EITHER: (a) 15 total ratings given, OR (b) student completes a Play Store review (and already has 15+ ratings). Whichever comes first. Flat cap of 15 for all students — no branching logic.</p>
+      <p>Micro-ratings stop permanently when EITHER: (a) 15 total ratings given, OR (b) student completes a Play Store review. Whichever comes first.</p>
     </div>
   </div>
 
@@ -564,14 +583,14 @@ After each rating or skip:
   <h3>What Changes N vs What Doesn't</h3>
   <div class="table-wrap">
     <table>
-      <thead><tr><th>Event</th><th>N Changes?</th><th>Counter Resets?</th></tr></thead>
+      <thead><tr><th>Event</th><th>N Value</th><th>Counter</th><th>5-Day Gap Timer</th></tr></thead>
       <tbody>
-        <tr><td>Student gives a rating (any)</td><td>YES &mdash; N increases by (rating_number + 1)</td><td>YES &mdash; resets to 0</td></tr>
-        <tr><td>Student gives negative rating</td><td>YES &mdash; additional +6 permanently</td><td>YES &mdash; resets to 0</td></tr>
-        <tr><td>Student skips the prompt</td><td>YES &mdash; N increases (skip = handled)</td><td>YES &mdash; resets to 0</td></tr>
-        <tr><td>Monthly cap blocks prompt</td><td>NO &mdash; student never saw it</td><td>NO &mdash; stays at N</td></tr>
-        <tr><td>Session cap defers prompt</td><td>NO &mdash; student never saw it</td><td>NO &mdash; stays at N</td></tr>
-        <tr><td>Student inactive 7+ days, returns</td><td>N unchanged</td><td>YES &mdash; resets to 0 (grace period)</td></tr>
+        <tr><td>Positive/neutral rating given</td><td>Stays at 3 (or returns to 3 if was 6)</td><td>Resets to 0</td><td>Resets (today = new start)</td></tr>
+        <tr><td>Negative rating given</td><td>Becomes 6 for next cycle only</td><td>Resets to 0</td><td>Resets (today = new start)</td></tr>
+        <tr><td>Student skips the prompt</td><td>Stays at 3 (skip is neutral)</td><td>Resets to 0</td><td>Resets (today = new start)</td></tr>
+        <tr><td>Counter hits N but 5-day gap not met</td><td>No change</td><td>Stays at N (waits)</td><td>No change (still counting)</td></tr>
+        <tr><td>Session cap defers prompt</td><td>No change</td><td>Stays at N</td><td>No change</td></tr>
+        <tr><td>Student inactive 7+ days, returns</td><td>No change</td><td>Resets to 0 (grace period)</td><td>No change</td></tr>
       </tbody>
     </table>
   </div>
@@ -671,7 +690,7 @@ After each rating or skip:
         <tr>
           <td><strong style="color:#EF4444">Negative</strong></td>
           <td>"Not helpful", "Still fuzzy", "Not really"</td>
-          <td>Stored. Follow-up shown. Counter resets. N gets +6 penalty.</td>
+          <td>Stored. Follow-up shown. Counter resets. N becomes 6 for next cycle only.</td>
         </tr>
         <tr>
           <td><strong style="color:#94A3B8">Skip</strong></td>
@@ -841,20 +860,18 @@ After each rating or skip:
     B -->|No - thresholds not met| Z[Skip Silently]
     C -->|"Not already rated\n+ no crash"| D[Increment Counter]
     C -->|Already rated or crash| Z
-    C -->|No| Z
-    C -->|Yes| D[Increment Counter]
-    D --> E{Counter = N?}
+    D --> E{Counter >= N?\nN=3 normal, N=6 after negative}
     E -->|No| Z
     E -->|Yes| F{Session Cap Clear?}
     F -->|No| G[Defer:\nCounter stays at N]
-    F -->|Yes| H{Monthly Cap Clear?}
-    H -->|No| G
+    F -->|Yes| H{5+ Days Since\nLast Prompt?}
+    H -->|No| G2[Counter stays at N\nWaits for gap to clear]
     H -->|Yes| I[Show Micro-Rating Popup]
     I --> J{Student Response}
-    J -->|Positive| K[Store + Reset Counter\n+ N increases normally]
+    J -->|Positive| K[Store + Reset Counter\nN stays 3]
     J -->|Neutral| K
-    J -->|Negative| L[Store + Reset Counter\n+ N increases + 6 penalty]
-    J -->|Skip| M[Log + Reset Counter\n+ N increases normally]
+    J -->|Negative| L[Store + Reset Counter\nN becomes 6 next cycle]
+    J -->|Skip| M[Log + Reset Counter\nN stays 3]
     K --> N[Update Sentiment Data]
     L --> N
     M --> N
@@ -891,23 +908,25 @@ After each rating or skip:
     <div class="code-block">
       <button class="copy-btn" onclick="copyCode(this)">Copy</button>
       <pre>flowchart TD
-    A[Student Completes Activity] --> B{Activity Completed? F1 Criteria}
-    B -->|No| Z[Skip Silently]
-    B -->|Yes| C{Eligible? Not already rated + no crash}
-    C -->|No| Z
-    C -->|Yes| D[Increment Counter]
-    D --> E{Counter = N?}
+    A[Student Completes Activity] --> B{Activity Completed?}
+    B -->|Test: 25% Qs + 40% duration| C{Eligible? Not already rated + no crash}
+    B -->|Video: 80% actually played| C
+    B -->|Q-Bank: 20+ questions| C
+    B -->|No - thresholds not met| Z[Skip Silently]
+    C -->|Eligible| D[Increment Counter]
+    C -->|Not eligible| Z
+    D --> E{Counter >= N? N=3 or N=6 after negative}
     E -->|No| Z
     E -->|Yes| F{Session Cap Clear?}
     F -->|No| G[Defer: Counter stays at N]
-    F -->|Yes| H{Monthly Cap Clear?}
-    H -->|No| G
+    F -->|Yes| H{5+ Days Since Last Prompt?}
+    H -->|No| G2[Counter stays at N, waits for gap]
     H -->|Yes| I[Show Micro-Rating Popup]
     I --> J{Student Response}
-    J -->|Positive| K[Store + Reset Counter + N increases normally]
+    J -->|Positive| K[Store + Reset Counter, N stays 3]
     J -->|Neutral| K
-    J -->|Negative| L[Store + Reset Counter + N increases + 6 penalty]
-    J -->|Skip| M[Log + Reset Counter + N increases normally]
+    J -->|Negative| L[Store + Reset Counter, N becomes 6 next cycle]
+    J -->|Skip| M[Log + Reset Counter, N stays 3]
     K --> N[Update Sentiment Data]
     L --> N
     M --> N
@@ -932,41 +951,56 @@ After each rating or skip:
   </details>
 
   <!-- Flow 2 -->
-  <h3>Flow 2: Progressive N Calculation</h3>
+  <h3>Flow 2: Counter + Gap Logic</h3>
   <div class="mermaid-diagram">
     <pre class="mermaid">flowchart TD
-    A[Rating Given or Skip] --> B{Was Response Negative?}
-    B -->|No| C[Increment =\nrating_number + 1]
-    B -->|Yes| D[Increment =\nrating_number + 1 + 6]
-    C --> E[New N =\nCurrent N + Increment]
-    D --> E
-    E --> F{Total Lifetime\nRatings >= 15?}
-    F -->|Yes| G[Retire Micro-Ratings\nPermanently]
-    F -->|No| H{Total This Month\n>= Monthly Cap?}
-    H -->|Yes| I[Pause Until\nNext Month]
-    H -->|No| J[System Active\nWait for Next Activity]
+    A[Eligible Activity Completed] --> B[Increment Counter]
+    B --> C{Counter >= N?\nN=3 normal, N=6 after negative}
+    C -->|No| D[Wait for\nNext Activity]
+    C -->|Yes| E{5+ Days Since\nLast Prompt?}
+    E -->|No| F[Counter Stays at N\nWaits for Gap]
+    E -->|Yes| G{Session Cap Clear?}
+    G -->|No| H[Defer to\nNext Session]
+    G -->|Yes| I[Show Prompt]
+    I --> J{Response?}
+    J -->|Positive or Neutral| K[N = 3\nCounter = 0\nGap Timer Resets]
+    J -->|Negative| L[N = 6 next cycle\nCounter = 0\nGap Timer Resets]
+    J -->|Skip| M[N stays 3\nCounter = 0\nGap Timer Resets]
+    K --> N{Lifetime >= 15?}
+    L --> N
+    M --> N
+    N -->|Yes| O[Retire Permanently]
+    N -->|No| D
 
     style A fill:#dbeafe,stroke:#2563eb,color:#1e293b
-    style G fill:#fecaca,stroke:#dc2626,color:#1e293b
-    style I fill:#fef3c7,stroke:#d97706,color:#1e293b
-    style J fill:#bbf7d0,stroke:#16a34a,color:#1e293b
-    style D fill:#fed7aa,stroke:#ea580c,color:#1e293b</pre>
+    style I fill:#bbf7d0,stroke:#16a34a,color:#1e293b
+    style O fill:#fecaca,stroke:#dc2626,color:#1e293b
+    style F fill:#fef3c7,stroke:#d97706,color:#1e293b
+    style H fill:#fef3c7,stroke:#d97706,color:#1e293b
+    style L fill:#fed7aa,stroke:#ea580c,color:#1e293b</pre>
   </div>
   <details class="whimsical-code">
     <summary>Copy for Whimsical</summary>
     <div class="code-block">
       <button class="copy-btn" onclick="copyCode(this)">Copy</button>
       <pre>flowchart TD
-    A[Rating Given or Skip] --> B{Was Response Negative?}
-    B -->|No| C[Increment = rating_number + 1]
-    B -->|Yes| D[Increment = rating_number + 1 + 6]
-    C --> E[New N = Current N + Increment]
-    D --> E
-    E --> F{Total Lifetime Ratings >= 15?}
-    F -->|Yes| G[Retire Micro-Ratings Permanently]
-    F -->|No| H{Total This Month >= Monthly Cap?}
-    H -->|Yes| I[Pause Until Next Month]
-    H -->|No| J[System Active - Wait for Next Eligible Activity]</pre>
+    A[Eligible Activity Completed] --> B[Increment Counter]
+    B --> C{Counter >= N? N=3 normal, N=6 after negative}
+    C -->|No| D[Wait for Next Activity]
+    C -->|Yes| E{5+ Days Since Last Prompt?}
+    E -->|No| F[Counter Stays at N - Waits for Gap]
+    E -->|Yes| G{Session Cap Clear?}
+    G -->|No| H[Defer to Next Session]
+    G -->|Yes| I[Show Prompt]
+    I --> J{Response?}
+    J -->|Positive or Neutral| K[N = 3, Counter = 0, Gap Timer Resets]
+    J -->|Negative| L[N = 6 next cycle, Counter = 0, Gap Timer Resets]
+    J -->|Skip| M[N stays 3, Counter = 0, Gap Timer Resets]
+    K --> N{Lifetime >= 15?}
+    L --> N
+    M --> N
+    N -->|Yes| O[Retire Permanently]
+    N -->|No| D</pre>
     </div>
   </details>
 
@@ -1055,19 +1089,19 @@ const edgeCases = [
   { n:7, title:"Q-bank: 20 questions, all wrong", what:"COMPLETED. Score doesn't affect completion.", why:"Wrong answers = valid experience to rate." },
   { n:8, title:"Same activity rated before (rewatch/retake)", what:"NOT eligible. Counter doesn't increment.", why:"Re-rating gives no new data." },
   { n:9, title:"Session cap hit, counter at N", what:"Counter stays at N. Prompt deferred. First eligible activity in next session triggers it.", why:"Max 1 prompt per session." },
-  { n:10, title:"Monthly cap hit (6/6 used)", what:"Counter stays at N. N doesn't change. Deferred to next month.", why:"Monthly safety net." },
-  { n:11, title:"Student skips the prompt", what:"Counter resets. N increases (skip = handled). No backoff.", why:"Skip is neutral, not negative." },
-  { n:12, title:"Negative rating \u2192 backoff", what:"N gets +6 permanent penalty. All future N values shifted up.", why:"Unhappy students need more space. Permanently." },
+  { n:10, title:"Counter hits N but 5-day gap not met", what:"Counter stays at N. Waits for gap to clear. Next eligible activity after gap clears triggers the prompt.", why:"Prevents front-loading. Ensures even spacing (~1 prompt per 5 days max)." },
+  { n:11, title:"Student skips the prompt", what:"Counter resets to 0. N stays at 3 (skip is neutral). 5-day gap timer resets.", why:"Skip is neutral, not negative. No backoff." },
+  { n:12, title:"Negative rating \u2192 backoff", what:"N becomes 6 for the next cycle ONLY. After the next positive/neutral/skip, N returns to 3.", why:"Temporary backoff. One bad experience shouldn't haunt permanently." },
   { n:13, title:"Student inactive 7+ days, returns", what:"Counter resets to 0. N unchanged. 3 activities grace before next prompt.", why:"Returning students need space to re-engage." },
   { n:14, title:"Video 85%, student taps Back", what:"COMPLETED for counter. Prompt NOT shown (not at natural pause).", why:"Out-of-context prompt is worse than no prompt." },
   { n:15, title:"Two devices simultaneously", what:"Counter is server-side, atomic increments. First device to hit N gets prompt.", why:"Prevents double-prompting." },
   { n:16, title:"Student clears app cache", what:"No effect. Counter is server-side, tied to user_id.", why:"Server is source of truth." },
-  { n:17, title:"Lifetime 15 ratings reached", what:"Micro-ratings retired permanently. Acknowledgment shown. Play Store ask still works (if not already done).", why:"15 ratings = enough product data. Progressive N has already made prompts near-invisible by this point." },
+  { n:17, title:"Lifetime 15 ratings reached", what:"Micro-ratings retired permanently. Acknowledgment shown. Play Store ask still works (if not already done).", why:"15 ratings = enough product data from this student." },
   { n:'17b', title:"Student completes Play Store review", what:"Entire review system retired — both micro-ratings AND Play Store ask. No more prompts of any kind. Automatic support triggers (backend) stay active.", why:"The goal is achieved. Continuing to prompt is pure friction. Respect the student." },
   { n:18, title:"Play Store API quota exhausted", what:"Nothing visible. Student taps \"Rate\" but card doesn't appear. Log event. Set cooldown 90 days.", why:"Google's quota is silent. We can't control it." },
   { n:19, title:"Free user upgrades to paid", what:"All history carries over. No resets. Wait 7 days before Play Store eligibility.", why:"Let them experience paid features first." },
   { n:20, title:"\"Found a wrong answer\" selected", what:"Auto-creates critical content ticket with session question IDs.", why:"Wrong answers are the highest-priority content defect." },
-  { n:21, title:"Config changed mid-cycle (e.g., monthly cap 6\u21924)", what:"Takes effect immediately. If student already at 5/6 and cap drops to 4, they're over-cap. No more prompts this month.", why:"Remote config is real-time." },
+  { n:21, title:"Config changed mid-cycle (e.g., gap changed 5\u21927 days)", what:"Takes effect immediately. If student was 4 days into a 5-day gap and gap changes to 7, they wait 3 more days.", why:"Config changes apply in real-time." },
   { n:22, title:"Student closes app before interacting with popup", what:"Popup opportunity lost. Counter stays at N. Next session, first eligible activity re-triggers.", why:"Don't re-show stale prompts." },
 ];
 

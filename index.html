@@ -834,9 +834,13 @@ After each rating or skip:
   <h3>Flow 1: Complete System Flow (Tier 1 + Tier 2)</h3>
   <div class="mermaid-diagram">
     <pre class="mermaid">flowchart TD
-    A[Student Completes Activity] --> B{Activity Completed?\nF1 Criteria}
-    B -->|No| Z[Skip Silently]
-    B -->|Yes| C{Eligible?\nNot already rated + no crash}
+    A[Student Completes Activity] --> B{Activity Completed?}
+    B -->|"Test: Submitted + 25% Qs\nattempted + 40% duration"| C{Eligible?}
+    B -->|"Video: 80% actually\nplayed, not seeked"| C
+    B -->|"Q-Bank: 20+ questions\nanswered in session"| C
+    B -->|No - thresholds not met| Z[Skip Silently]
+    C -->|"Not already rated\n+ no crash"| D[Increment Counter]
+    C -->|Already rated or crash| Z
     C -->|No| Z
     C -->|Yes| D[Increment Counter]
     D --> E{Counter = N?}
